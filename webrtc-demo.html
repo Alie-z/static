@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8" />
+        <title>WebRTC Prompt 切流 Demo</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                margin: 20px;
+                display: flex;
+                gap: 24px;
+            }
+            video,
+            canvas {
+                width: 320px;
+                height: 180px;
+                background: #000;
+            }
+            #control {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="control">
+            <input id="prompt" placeholder="输入场景，如：rainy forest" />
+            <button id="switch-camera">切换到摄像头</button>
+            <button id="switch-canvas">根据 Prompt 切换到生成场景</button>
+            <div id="status"></div>
+        </div>
+        <video id="local" autoplay playsinline muted></video>
+        <canvas id="scene" width="640" height="360"></canvas>
+
+        <script>
+            const statusEl = document.getElementById('status');
+            const localVideo = document.getElementById('local');
+            const promptInput = document.getElementById('prompt');
+            const sceneCanvas = document.getElementById('scene');
+            const ctx = sceneCanvas.getContext('2d');
+
+            // WebRTC 相关的全局变量：PeerConnection 与当前使用的媒体流
+            let pc;
+            let localStream;
+            let canvasStream;
+            let animationFrame;
+            let promptText = '';
+
+            async function init() {
+                // 初始化 RTCPeerConnection（演示场景未做信令交换，仅展示本地切换逻辑）
+                pc = new RTCPeerConnection();
+                console.log('🚀 > init > pc:', pc);
+                pc.ontrack = ({streams}) => {
+                    // 真实业务中可在此将远端流渲染到 <video>
+                    console.log('Remote stream arrived', streams[0]);
+                };
+                // 默认进入页面后切换到本地摄像头
+                await switchToCamera();
+            }
+
+            async function switchToCamera() {
+                // 停掉旧的摄像头流（如果存在），防止资源泄露
+                stopStream(localStream);
+                localStream = await navigator.mediaDevices.getUserMedia({video: true, audio: false});
+                // 将摄像头流推送给本地播放器及 PeerConnection
+                applyStream(localStream);
+                statusEl.textContent = '当前轨道：摄像头';
+            }
+
+            async function switchToPromptScene() {
+                // 记录用户输入的 prompt；为空则给一个默认值
+                promptText = promptInput.value.trim() || 'default scene';
+                // 清理旧的 canvas 流并重新捕获一个新的 30fps 流
+                stopStream(canvasStream);
+                canvasStream = sceneCanvas.captureStream(30); // 将 canvas 渲染输出转换成 MediaStream
+                startCanvasRender();
+                // 将生成场景流推送到播放器与 PeerConnection
+                applyStream(canvasStream);
+                statusEl.textContent = `当前轨道：Prompt 场景（${promptText}）`;
+            }
+
+            function applyStream(stream) {
+                console.log('🚀 > applyStream > stream:', stream);
+                // 把新的流挂到本地 <video> 上，便于在页面上即时预览
+                localVideo.srcObject = stream;
+                const track = stream.getVideoTracks()[0];
+
+                if (!pc) return;
+                // 查找之前已经添加过的 video sender，后续直接换轨
+                const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
+
+                if (sender) {
+                    // 不重新协商，直接替换发送轨道，实现无缝切流
+                    sender.replaceTrack(track);
+                    sender
+                        .setParameters({
+                            // 根据需要设置编码参数，此处示例限制最大码率
+                            encodings: [{maxBitrate: 1500_000}]
+                        })
+                        .catch(console.warn);
+                    // 主动请求关键帧，减少远端黑屏时间（部分浏览器支持）
+                    sender.requestKeyFrame?.();
+                } else {
+                    // 首次推送流时，将轨道加入 PeerConnection
+                    pc.addTrack(track, stream);
+                }
+            }
+
+            function stopStream(stream) {
+                // 停止流中的所有轨道，释放摄像头或 canvas 资源
+                if (!stream) return;
+                stream.getTracks().forEach(t => t.stop());
+            }
+
+            function startCanvasRender() {
+                // 若之前已有动画帧循环，需要先取消，避免重复渲染
+                cancelAnimationFrame(animationFrame);
+                let t = 0;
+                (function draw() {
+                    // 简单的示例：通过改变 HSL 色调模拟一个动态背景
+                    t += 0.02;
+                    ctx.fillStyle = `hsl(${(t * 40) % 360}, 70%, 40%)`;
+                    ctx.fillRect(0, 0, sceneCanvas.width, sceneCanvas.height);
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '28px sans-serif';
+                    // 在画面上展示当前 prompt 与时间戳
+                    ctx.fillText(`Prompt: ${promptText}`, 24, 60);
+                    ctx.fillText(`Time: ${(performance.now() / 1000).toFixed(1)}s`, 24, 100);
+                    animationFrame = requestAnimationFrame(draw);
+                })();
+            }
+
+            // 绑定按钮事件：手动切摄像头或根据 prompt 切换到生成场景
+            document.getElementById('switch-camera').onclick = switchToCamera;
+            document.getElementById('switch-canvas').onclick = switchToPromptScene;
+
+            // 启动 demo
+            init();
+        </script>
+    </body>
+</html>

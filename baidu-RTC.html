@@ -1,0 +1,2589 @@
+<!DOCTYPE html>
+<!-- saved from url=(0062)https://brtc.cdn.bcebos.com/brtc.html?a=appjfkryqbzyns5&r=8888 -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+        <title>Baidu-RTC</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- <meta name="mobile-web-app-capable" content="yes"> -->
+
+        <meta name="theme-color" content="#4D66FE" />
+        <link rel="apple-touch-icon" sizes="192x192" href="https://brtc-sdk.cdn.bcebos.com/logo/rtc-logo-192x192.png" />
+        <link rel="shortcut" href="https://brtc-sdk.cdn.bcebos.com/logo/rtc-logo-192x192.png" />
+        <script type="text/javascript" src="https://code.bdstatic.com/npm/jquery@2.1.0/dist/jquery.min.js"></script>
+        <script
+            type="text/javascript"
+            src="https://code.bdstatic.com/npm/jquery-blockui@2.7.0/jquery.blockUI.js"
+        ></script>
+        <script
+            type="text/javascript"
+            src="https://brtc-sdk.cdn.bcebos.com/npm/baidurtc@1.2.20/baidu.rtc.sdk.js"
+        ></script>
+        <style type="text/css"></style>
+        <script type="text/javascript" src="https://code.bdstatic.com/npm/baidurtc@1.0.1/demo/js.cookie.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://code.bdstatic.com/npm/bootswatch@3.3.7/cerulean/bootstrap.min.css"
+            type="text/css"
+        />
+        <style type="text/css">
+            /* ===== 全局重置与基础样式 ===== */
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+                    'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                color: #333;
+                line-height: 1.6;
+            }
+
+            .hide {
+                display: none !important;
+            }
+
+            /* ===== 容器布局 ===== */
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            #login {
+                background: rgba(255, 255, 255, 0.95);
+                border-radius: 16px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                padding: 40px;
+                margin: 20px auto;
+                backdrop-filter: blur(10px);
+            }
+
+            .demo-container {
+                max-width: 1200px;
+                margin: 0 auto;
+                display: flex;
+            }
+            .login {
+                width: 100%;
+                max-width: 600px;
+                margin: 0 auto;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            /* ===== 标题与文字样式 ===== */
+            .rtc-title-font-color {
+                font-size: 28px;
+                font-weight: 600;
+                color: #1a1c47;
+                margin: 0 0 30px 0;
+                text-align: center;
+            }
+
+            .rtc-font-color {
+                font-size: 14px;
+                color: #4d66fe;
+                font-weight: 500;
+            }
+
+            /* ===== 输入框样式 ===== */
+            .rtc-input-line {
+                width: 100%;
+                padding: 12px 16px;
+                margin: 10px 0;
+                font-size: 16px;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                background: #fff;
+                color: #333;
+                transition: all 0.3s ease;
+            }
+
+            .rtc-input-line:focus {
+                outline: none;
+                border-color: #4d66fe;
+                box-shadow: 0 0 0 3px rgba(77, 102, 254, 0.1);
+            }
+
+            .rtc-input-line::placeholder {
+                color: #999;
+            }
+
+            /* ===== 选择框样式 ===== */
+            select {
+                width: 100%;
+                padding: 10px 16px;
+                margin: 8px 0;
+                font-size: 14px;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                background: #fff;
+                color: #333;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            select:focus {
+                outline: none;
+                border-color: #4d66fe;
+                box-shadow: 0 0 0 3px rgba(77, 102, 254, 0.1);
+            }
+
+            /* ===== 按钮样式 ===== */
+            .button {
+                display: inline-block;
+                padding: 12px 24px;
+                margin: 8px;
+                font-size: 14px;
+                font-weight: 600;
+                text-align: center;
+                text-decoration: none;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            .button:active {
+                transform: translateY(0);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .button.big {
+                padding: 16px 40px;
+                font-size: 16px;
+                width: auto;
+                min-width: 200px;
+            }
+
+            .button.blue {
+                background: linear-gradient(135deg, #4d66fe 0%, #5a7aff 100%);
+                color: #fff;
+            }
+
+            .button.blue:hover {
+                background: linear-gradient(135deg, #5a7aff 0%, #6678ff 100%);
+            }
+
+            .button.green {
+                background: linear-gradient(135deg, #28a745 0%, #34ce57 100%);
+                color: #fff;
+            }
+
+            .button.gray {
+                background: linear-gradient(135deg, #6c757d 0%, #7d8790 100%);
+                color: #fff;
+            }
+
+            /* ===== 视频容器样式 ===== */
+            .therevideo-container {
+                display: none;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 20px;
+                margin: 30px auto;
+                max-width: 1400px;
+                padding: 20px;
+                transform: translateX(30px);
+            }
+
+            .therevideo-container.show {
+                display: grid;
+            }
+
+            .therevideo-item {
+                background: rgba(255, 255, 255, 0.95);
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+                position: relative;
+                min-height: 300px;
+                display: flex;
+                flex-direction: column;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+
+            .therevideo-item:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+            }
+
+            .therevideo-item .video-label {
+                padding: 12px 16px;
+                background: linear-gradient(135deg, #4d66fe 0%, #5a7aff 100%);
+                color: #fff;
+                font-weight: 600;
+                font-size: 14px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            /* .therevideo-item .video-wrapper {
+                flex: 1;
+                background: #000;
+                position: relative;
+                min-height: 250px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            } */
+
+            .therevideo-item video {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                display: block;
+            }
+
+            .therevideo-item #herevideo {
+                width: 100%;
+                height: 100%;
+                min-height: 250px;
+            }
+
+            .therevideo-item #herevideo video {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+
+            .m-netcall {
+                width: 100%;
+                height: 100%;
+                flex: 1;
+                position: relative;
+            }
+
+            /* ===== Prompt 控制面板 ===== */
+            #promptcontrol {
+                margin-top: 30px;
+                padding: 24px;
+                background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+                border-radius: 12px;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+                border: 1px solid #e0e0e0;
+            }
+
+            #promptcontrol input[type='text'] {
+                width: 100%;
+                padding: 12px 16px;
+                font-size: 14px;
+                border: 2px solid #4d66fe;
+                border-radius: 8px;
+                background: #fff;
+                transition: all 0.3s ease;
+            }
+
+            #promptcontrol input[type='text']:focus {
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(77, 102, 254, 0.1);
+            }
+
+            #promptcontrol button {
+                margin: 4px;
+                flex: 1;
+                min-width: 140px;
+            }
+
+            #promptDemoPreview {
+                display: flex;
+                gap: 16px;
+                margin-top: 20px;
+                flex-wrap: wrap;
+                width: 600px;
+            }
+
+            #promptDemoPreview > div {
+                flex: 1;
+                min-width: 280px;
+            }
+
+            #promptDemoPreview video,
+            #promptDemoPreview canvas {
+                width: 300px;
+                height: 169px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            #promptstatus {
+                margin-top: 12px;
+                padding: 8px 12px;
+                border-radius: 6px;
+                font-size: 13px;
+                min-height: 20px;
+            }
+
+            /* ===== 操作区域样式 ===== */
+            #actions {
+                margin: 20px 0;
+                padding: 20px;
+                background: #f8f9fa;
+                border-radius: 8px;
+            }
+
+            #actions select {
+                margin: 8px 0;
+            }
+
+            #pullvideo {
+                margin: 20px 0;
+                padding: 16px;
+                background: #f8f9fa;
+                border-radius: 8px;
+            }
+
+            /* ===== 表格样式 ===== */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 20px 0;
+                background: #fff;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            table tr th,
+            table tr td {
+                padding: 12px 16px;
+                text-align: left;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            table tr th {
+                background: #4d66fe;
+                color: #fff;
+                font-weight: 600;
+            }
+
+            table tr:last-child td {
+                border-bottom: none;
+            }
+
+            table tr:hover {
+                background: #f8f9fa;
+            }
+
+            /* ===== 底部链接样式 ===== */
+            .gotoBaidu {
+                height: 30px;
+                position: relative;
+            }
+
+            .gotobd {
+                position: absolute;
+                width: 100%;
+                top: 0;
+                right: 0;
+                text-align: right;
+                padding-right: 20px;
+            }
+
+            .gotobd a {
+                color: #fff;
+                text-decoration: none;
+                margin-left: 15px;
+                font-size: 14px;
+                transition: opacity 0.3s ease;
+            }
+
+            .gotobd a:hover {
+                opacity: 0.8;
+            }
+
+            /* ===== 响应式设计 ===== */
+            @media (max-width: 768px) {
+                #login {
+                    padding: 24px;
+                    margin: 10px;
+                }
+
+                .rtc-title-font-color {
+                    font-size: 24px;
+                }
+
+                .button {
+                    width: 100%;
+                    margin: 8px 0;
+                }
+
+                .therevideo-container {
+                    grid-template-columns: 1fr;
+                    padding: 10px;
+                    gap: 15px;
+                }
+
+                .therevideo-item {
+                    min-height: 250px;
+                }
+
+                .therevideo-item .video-wrapper {
+                    min-height: 200px;
+                }
+
+                #promptDemoPreview {
+                    flex-direction: column;
+                }
+
+                #promptDemoPreview > div {
+                    width: 100%;
+                }
+            }
+
+            @media (min-width: 769px) and (max-width: 1024px) {
+                .therevideo-container {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+
+            /* ===== 细节优化 ===== */
+            #details {
+                margin: 30px 0;
+            }
+
+            #details input {
+                width: 100%;
+            }
+
+            #twobar {
+                text-align: center;
+                margin: 30px 0;
+            }
+
+            #twobar img {
+                margin: 10px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            #continueplaying {
+                padding: 20px;
+                background: rgba(255, 255, 255, 0.95);
+                border-radius: 8px;
+                margin: 20px auto;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            }
+
+            /* ===== 输入组样式 ===== */
+            .input-group {
+                margin: 20px 0;
+            }
+
+            .input-group label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 500;
+                color: #333;
+            }
+        </style>
+        <script id="picviewer-page-script">
+            (function (messageID) {
+                var frameID = Math.random();
+                var frames = {
+                    top: window.top
+                };
+
+                window.addEventListener(
+                    'message',
+                    function (e) {
+                        var data = e.data;
+                        if (!data || !data.messageID || data.messageID != messageID) return; //通信ID认证
+                        var source = e.source;
+                        if (source === window) {
+                            //来自contentscript,发送出去,或者干嘛。
+                            if (data.to) {
+                                data.from = frameID;
+                                frames[data.to].postMessage(data, '*');
+                            } else {
+                                switch (data.command) {
+                                    case 'getIframeObject':
+                                        {
+                                            var frameWindow = frames[data.windowId];
+                                            var iframes = document.getElementsByTagName('iframe');
+                                            var iframe;
+                                            var targetIframe;
+                                            for (var i = iframes.length - 1; i >= 0; i--) {
+                                                iframe = iframes[i];
+                                                if (iframe.contentWindow === frameWindow) {
+                                                    targetIframe = iframe;
+                                                    break;
+                                                }
+                                            }
+                                            var cusEvent = document.createEvent('CustomEvent');
+                                            cusEvent.initCustomEvent('pv-getIframeObject', false, false, targetIframe);
+                                            document.dispatchEvent(cusEvent);
+                                        }
+                                        break;
+                                }
+                            }
+                        } else {
+                            //来自别的窗口的，contentscript可以直接接收，这里保存下来自的窗口的引用
+                            frames[data.from] = source;
+                        }
+                    },
+                    true
+                );
+            })('pv-0.5106795670312598');
+        </script>
+    </head>
+    <body>
+        <script>
+            function GetRequest() {
+                var url = location.search;
+                var theRequest = {};
+                if (url.indexOf('?') !== -1) {
+                    var str = url.substr(1);
+                    var strs = str.split('&');
+                    for (var i = 0; i < strs.length; i++) {
+                        theRequest[strs[i].split('=')[0]] = decodeURIComponent(strs[i].split('=')[1]);
+                    }
+                }
+                return theRequest;
+            }
+
+            var gRequest = GetRequest();
+            console.log('🚀 > gRequest:', gRequest);
+            var defaultDeviceID = null;
+            var gDoPing = false;
+            var gDoPong = false;
+            var gPingStartupTime = 8000;
+            var gPingRepeatTime = 5000;
+            var gAsPublisher = true;
+            var gShareScreen = false;
+            var gRtmpmix = false;
+            var gRtmpMixLayoutIndex = '';
+            var gRecording = false;
+            var gAutoSubScribe = true;
+            var gAutoPlayMuted = false;
+            var gAutoPublish = true;
+            var gUsingData = true;
+            var gUsingVideo = true;
+            var gUsingAudio = true;
+            var gReceivingVideo = true;
+            var gReceivingAudio = true;
+            var gShowVideobps = true;
+            var gVideoProfile = 'hires';
+            var gScreenProfile = 'raw';
+            var gWaitPermissionTimeOutMs = 30000;
+            var gCandidateIP = null;
+            var gCandidatePort = null;
+            var gMediaServerIP = null;
+            var gShowSpinner = true;
+            var gUserEvent = true;
+            var gSessionEvent = true;
+            var gRemoteMediaState = false;
+            var gAutologin = false;
+            var gAutoRelogin = false;
+            // 'playing'
+            var gState = 'init';
+            var gBitRate = 1500;
+            var gAudioBitRate = null;
+            var gAudioStereo = false;
+            var gPreviewLocal = false;
+            var gUsingMessageAPI = false;
+            var gVolumeMonitor = false;
+            var gMirrorLocalVideo = false;
+            var gReportMonitorData = false;
+            var gReportEnv = 'online';
+            var gDynamicRemoteVideoView = false;
+            var gLog = false;
+            var gName = 'brtc webclient';
+            var gMultiStreamSDK = false;
+            var gBRTCProtocolV4 = false;
+            var gVideoCodec = 'h264'; // 'vp8', 'vp9', 'h263', 'h265', 'h266', 'av1'
+            var gAudioCodec = ''; // 'opus', 'pcmu', 'pcma', 'g722', 'isac16', 'isac32'
+
+            var gMuted = false;
+            var gVideoMuted = false;
+            var gPublished = true;
+            var last_sub_feedid = 0;
+            var gSharescreenStream = null;
+
+            $(document).ready(function () {
+                $('#roomname').attr('value', Cookies.get('roomname'));
+                $('#appid').attr('value', Cookies.get('appid'));
+                $('#userid').attr('value', Cookies.get('userid'));
+                console.log('🚀 > userid:', Cookies.get('userid'));
+                $('#token').attr('value', Cookies.get('token'));
+
+                gState = Cookies.get('state');
+
+                if (typeof gState === 'undefined') {
+                    gState = 'init';
+                }
+
+                var input_userid = '100' + Math.floor(Math.random() * 1000000).toString();
+                console.log('🚀 > input_userid:', input_userid);
+                var rtmp_server = '';
+
+                if (gRequest['a']) {
+                    gRequest['appid'] = gRequest['a'];
+                }
+                if (gRequest['ac']) {
+                    gRequest['audiocodec'] = gRequest['ac'];
+                }
+                if (gRequest['b']) {
+                    gRequest['bitrate'] = gRequest['b'];
+                }
+                if (gRequest['c']) {
+                    gRequest['candidateip'] = gRequest['c'];
+                }
+                if (gRequest['cp']) {
+                    gRequest['candidateport'] = gRequest['cp'];
+                }
+                if (gRequest['d']) {
+                    gRequest['displayname'] = gRequest['d'];
+                }
+                if (gRequest['r']) {
+                    gRequest['roomname'] = gRequest['r'];
+                }
+                if (gRequest['u']) {
+                    gRequest['userid'] = gRequest['u'];
+                }
+                if (gRequest['vc']) {
+                    gRequest['videocodec'] = gRequest['vc'];
+                }
+                if (gRequest['vp']) {
+                    gRequest['videoprofile'] = gRequest['vp'];
+                }
+                if (gRequest['l']) {
+                    gRequest['listener_only'] = gRequest['l'];
+                }
+                if (gRequest['mi']) {
+                    gRequest['mediaserverip'] = gRequest['mi'];
+                }
+                if (gRequest['mn']) {
+                    gRequest['mediaserverdn'] = gRequest['mn'];
+                }
+                if (gRequest['na']) {
+                    gRequest['no_audio'] = gRequest['na'];
+                }
+                if (gRequest['nv']) {
+                    gRequest['no_video'] = gRequest['nv'];
+                }
+                if (gRequest['ns']) {
+                    gRequest['no_autosubscribe'] = gRequest['ns'];
+                }
+                if (gRequest['np']) {
+                    gRequest['no_autopublish'] = gRequest['np'];
+                }
+                if (gRequest['s']) {
+                    gRequest['brtcserver'] = gRequest['s'];
+                }
+                if (gRequest['ss']) {
+                    gRequest['sharescreen'] = gRequest['ss'];
+                }
+                if (gRequest['t']) {
+                    gRequest['token'] = gRequest['t'];
+                }
+                if (gRequest['ar']) {
+                    gRequest['autorelogin'] = gRequest['ar'];
+                }
+                if (gRequest['rms']) {
+                    gRemoteMediaState = true;
+                }
+
+                if (gRequest['roomname']) {
+                    $('#roomname').attr('value', gRequest['roomname']);
+                }
+                if (gRequest['appid']) {
+                    $('#appid').attr('value', gRequest['appid']);
+                }
+                console.log("🚀 > gRequest['userid']:", gRequest['userid']);
+                if (gRequest['userid']) {
+                    input_userid = gRequest['userid'];
+                }
+                if (gRequest['token']) {
+                    $('#token').attr('value', gRequest['token']);
+                }
+                if (gRequest['ping']) {
+                    gDoPing = true;
+                }
+                if (gRequest['pong']) {
+                    gDoPong = true;
+                }
+                if (gRequest['ping_startup_time_ms']) {
+                    gPingStartupTime = gRequest['ping_startup_time_ms'];
+                }
+                if (gRequest['ping_repeat_time_ms']) {
+                    gPingRepeatTime = gRequest['ping_repeat_time_ms'];
+                }
+                if (gRequest['listener_only']) {
+                    gAsPublisher = false;
+                    gAutoPublish = false;
+                }
+                if (gRequest['sharescreen']) {
+                    gShareScreen = true;
+                }
+                if (gRequest['brtcserver']) {
+                    $('#brtcserver').removeClass('hide').show();
+                    // wss://
+                    if (gRequest['brtcserver'].length > 5) {
+                        $('#brtcserver').attr('value', gRequest['brtcserver']);
+                    }
+                }
+                if (gRequest['rtmpserver']) {
+                    $('#rtmpserver').removeClass('hide').show();
+                    // rtmp://
+                    if (gRequest['rtmpserver'].length > 5) {
+                        $('#rtmpserver').attr('value', gRequest['rtmpserver']);
+                    }
+                }
+                if (gRequest['rtmpmix']) {
+                    gRtmpmix = true;
+                }
+                if (gRequest['rtmpmixtemplate']) {
+                    // side_by_side_primary_720p_16_9, side_by_side_equal_720p_16_9, picture_in_picture_bottom_720p_16_9
+                    $('#rtmpmixtemplate').removeClass('hide').show();
+                    $('#rtmpmixtemplate').attr('value', gRequest['rtmpmixtemplate']);
+                }
+
+                if (gRequest['rtmpmixlayoutindex']) {
+                    gRtmpMixLayoutIndex = gRequest['rtmpmixlayoutindex'];
+                }
+
+                if (gRequest['recording']) {
+                    gRecording = true;
+                }
+                if (gRequest['no_autosubscribe']) {
+                    gAutoSubScribe = false;
+                    $('#pullvideo').removeClass('hide').show();
+                    $('#manualvideo').removeClass('hide').show();
+                    $('#therevideo').hide();
+                    let sel = document.getElementById('feedid');
+                    sel.options.add(new Option('NOT video(place holder)', 999999999));
+                    $('#feedid').change(function () {
+                        var myfeedid = parseInt($('#feedid').val(), 10);
+                        if (myfeedid !== 999999999) {
+                            if (last_sub_feedid !== 0 && last_sub_feedid !== myfeedid) {
+                                var that_sub_feedid = last_sub_feedid;
+                                setTimeout(x => {
+                                    BRTC_StopSubscribeStreaming(that_sub_feedid);
+                                }, 500);
+                            }
+                            BRTC_SubscribeStreaming('manualvideo', myfeedid);
+                            last_sub_feedid = myfeedid;
+                        }
+                    });
+                }
+                if (gRequest['no_autopublish']) {
+                    gAutoPublish = false;
+                    gPublished = false;
+                }
+                if (gRequest['no_data']) {
+                    gUsingData = false;
+                }
+                if (gRequest['no_video']) {
+                    gUsingVideo = false;
+                }
+                if (gRequest['no_audio']) {
+                    gUsingAudio = false;
+                }
+                if (gRequest['no_receivingvideo']) {
+                    gReceivingVideo = false;
+                }
+                if (gRequest['no_receivingaudio']) {
+                    gReceivingAudio = false;
+                }
+                if (gRequest['no_showvideobps']) {
+                    gShowVideobps = false;
+                }
+                if (gRequest['videoprofile']) {
+                    gVideoProfile = gRequest['videoprofile'];
+                    if (gVideoProfile.includes('x')) {
+                        var strs = gVideoProfile.split('x');
+                        var w = strs[0];
+                        var h_fps = strs[1].split('@');
+                        var h = h_fps[0];
+
+                        var fps = 15;
+                        if (h_fps.length > 1) {
+                            fps = h_fps[1];
+                        }
+
+                        gVideoProfile = {
+                            // facingMode= 'user'  'environment'
+                            facingMode: gRequest['facing'],
+                            height: {ideal: h},
+                            width: {ideal: w},
+                            frameRate: {ideal: fps}
+                        };
+                    }
+                }
+                if (gRequest['screenprofile']) {
+                    gScreenProfile = gRequest['screenprofile'];
+                }
+
+                if (gRequest['waitpermissiontimeout']) {
+                    gWaitPermissionTimeOutMs = gRequest['waitpermissiontimeout'];
+                }
+
+                if (gRequest['candidateip']) {
+                    gCandidateIP = gRequest['candidateip'];
+                }
+                if (gRequest['candidateport']) {
+                    gCandidatePort = gRequest['candidateport'];
+                }
+
+                if (gRequest['mediaserverip']) {
+                    gMediaServerIP = gRequest['mediaserverip'];
+                }
+
+                if (gRequest['mediaserverdn']) {
+                    var mediaServerDN = gRequest['mediaserverdn'];
+
+                    let xmlHttp = null;
+                    try {
+                        // Firefox, Opera 8.0+, Safari, IE7
+                        xmlHttp = new XMLHttpRequest();
+                    } catch (e) {
+                        // Old IE
+                        try {
+                            xmlHttp = new ActiveXObject('Microsoft.XMLHTTP');
+                        } catch (e) {
+                            window.alert('Your browser does not support XMLHTTP!');
+                            return;
+                        }
+                    }
+
+                    // OR https://httpdns.baidubce.com/v3/resolve?account_id=136238&dn=rtc-pn.exp.bcelive.com&sign=7a749f0c527c2e96f0b4ebe519c4d5b2&t=4829521605
+                    xmlHttp.open('GET', 'https://203.107.1.1/183659/d?host=' + mediaServerDN, true);
+                    xmlHttp.send();
+                    xmlHttp.onreadystatechange = function () {
+                        if (xmlHttp.readyState === 4) {
+                            if (xmlHttp.status === 200) {
+                                let response = JSON.parse(xmlHttp.responseText);
+                                if (response.ips.length > 0) {
+                                    gMediaServerIP = response.ips[0];
+                                }
+                            }
+                        }
+                    };
+                }
+
+                if (gRequest['no_showspinner']) {
+                    gShowSpinner = false;
+                }
+
+                if (gRequest['userevent']) {
+                    gUserEvent = true;
+                }
+
+                if (gRequest['sessionevent']) {
+                    gSessionEvent = true;
+                }
+
+                if (gRequest['autologin']) {
+                    gAutologin = true;
+                }
+
+                if (gRequest['autorelogin']) {
+                    gAutoRelogin = true;
+                }
+
+                if (gRequest['bitrate']) {
+                    gBitRate = parseInt(gRequest['bitrate'], 10);
+                }
+
+                if (gRequest['audiobitrate']) {
+                    gAudioBitRate = parseInt(gRequest['audiobitrate'], 10);
+                    gAudioStereo = true;
+                }
+
+                if (gRequest['audiostereo']) {
+                    gAudioStereo = true;
+                }
+
+                if (gRequest['textroom']) {
+                    gAutoSubScribe = false;
+                    gAutoPublish = false;
+                    gUsingData = false;
+                    gUsingVideo = false;
+                    gUsingAudio = false;
+                    gUsingMessageAPI = true;
+                    $('#therevideo').hide();
+                    $('#videos').remove();
+                }
+
+                if (gRequest['preview']) {
+                    gPreviewLocal = true;
+                    $('#testpreviewvideo').removeClass('hide').show();
+                    BRTC_DeviceTest_Start({localvideoviewid: 'testpreviewvideo'});
+                    $('#unpublish').value = 'Publish';
+                }
+
+                if (gRequest['messageapi']) {
+                    gUsingMessageAPI = true;
+                }
+
+                if (gRequest['volumemonitor']) {
+                    gVolumeMonitor = true;
+                }
+
+                if (gRequest['no_mirrorlocalvideo']) {
+                    gMirrorLocalVideo = false;
+                }
+
+                if (gRequest['reportmonitordata']) {
+                    gReportMonitorData = true;
+                }
+                if (gRequest['reportenv']) {
+                    gReportEnv = gRequest['reportenv'];
+                }
+
+                if (gRequest['dynamicvideoview']) {
+                    gDynamicRemoteVideoView = true;
+                }
+
+                if (gRequest['log']) {
+                    gLog = true;
+                }
+
+                if (gRequest['displayname']) {
+                    gName = gRequest['displayname'];
+                }
+
+                if (gRequest['autoplaymuted']) {
+                    gAutoPlayMuted = true;
+                }
+
+                if (gRequest['multistreamsdk']) {
+                    gMultiStreamSDK = true;
+                }
+
+                if (gRequest['v4']) {
+                    gBRTCProtocolV4 = true;
+                }
+
+                if (gRequest['videocodec']) {
+                    gVideoCodec = gRequest['videocodec'];
+                }
+
+                if (gRequest['audiocodec']) {
+                    gAudioCodec = gRequest['audiocodec'];
+                }
+
+                if (gRequest['canvas']) {
+                    var canvasEle = document.createElement('script');
+                    canvasEle.src = 'https://brtc-sdk.cdn.bcebos.com/web/demo/canvas/js/game.js?t=2';
+                    document.body.appendChild(canvasEle);
+                    gMirrorLocalVideo = false;
+                }
+
+                if (gRequest['test']) {
+                    console.log('🚀 > gRequest test:', gRequest);
+                    gLog = true;
+                    // Add a 'mute' button
+                    $('#herevideo').append(
+                        '<button class="button" id="mute"' +
+                            ' style="z-index:10; position: absolute; bottom: 0px; left: 0px; margin: 15px;">Mute</button>'
+                    );
+                    $('#mute').click(function () {
+                        gMuted = !gMuted;
+                        BRTC_MuteMicphone(gMuted);
+                    });
+                    $('#herevideo').append(
+                        '<button class="button" id="mutevideo"' +
+                            ' style="z-index:10; position: absolute; bottom: 0px; left: 70px; margin: 15px;">Video</button>'
+                    );
+                    $('#mutevideo').click(function () {
+                        gVideoMuted = !gVideoMuted;
+                        BRTC_MuteCamera(gVideoMuted);
+                    });
+                    // Add an 'unpublish' button
+                    $('#herevideo').append(
+                        '<button class="button" id="unpublish"' +
+                            ' style="z-index:10; position: absolute; bottom: 0px; right: 0px; margin: 15px;">Un/publish</button>'
+                    );
+                    $('#unpublish').click(function () {
+                        if (gPublished) {
+                            BRTC_StopPublish().then(() => {
+                                $('#unpublish').value = 'Publish';
+                                if (gPreviewLocal) {
+                                    BRTC_DeviceTest_Start({localvideoviewid: 'testpreviewvideo'});
+                                }
+                            });
+                            gPublished = false;
+                        } else {
+                            if (gPreviewLocal) {
+                                BRTC_DeviceTest_Stop();
+                            }
+                            BRTC_StartPublish();
+                            $('#unpublish').value = 'unPublish';
+                            gPublished = true;
+                            gMuted = false;
+                            gVideoMuted = false;
+                        }
+                    });
+
+                    var scriptEle = document.createElement('script');
+                    scriptEle.src = 'https://code.bdstatic.com/npm/vconsole@3.3.4/dist/vconsole.min.js';
+                    document.body.appendChild(scriptEle);
+                    scriptEle.onload = function () {
+                        window.vConsole = new VConsole();
+                    };
+
+                    $('#actions').removeClass('hide').show();
+                    $('#audiodevice').removeClass('hide').show();
+                    $('#audiooutputdevice').removeClass('hide').show();
+                }
+
+                $('#downloadapp').click(function () {
+                    $('#barimg').removeClass('hide').show();
+                    $('#mpimg').removeClass('hide').show();
+                    $('#mptitle').removeClass('hide').show();
+                });
+                $('#start').click(doClick);
+
+                function isSafari() {
+                    var ua = navigator.userAgent;
+                    return ua.includes('Safari') && !ua.includes('Chrome');
+                }
+
+                function doClick() {
+                    if (gShareScreen && isSafari()) {
+                        var that = this;
+                        navigator.mediaDevices.getDisplayMedia({video: true, audio: true}).then(
+                            function (stream) {
+                                gSharescreenStream = stream;
+                                $(that).attr('disabled', true).unbind('click');
+                                loginBRTC();
+                            },
+                            function (error) {
+                                console.log('Error: ' + error);
+                            }
+                        );
+                    } else {
+                        loginBRTC();
+                    }
+                }
+
+                function loginBRTC() {
+                    var input_roomname = $('#roomname').val();
+                    var input_appid = $('#appid').val();
+                    var input_token = $('#token').val();
+                    var input_brtcserver = $('#brtcserver').val();
+                    var input_rtmpserver = $('#rtmpserver').val();
+                    var input_rtmpmixtemplate = $('#rtmpmixtemplate').val();
+                    $('#twobar').remove();
+                    BRTC_Start({
+                        debuglevel: gLog, // true, false, 'all', ['debug','log','error']
+                        server: input_brtcserver,
+                        appid: input_appid,
+                        token: input_token,
+                        roomname: input_roomname,
+                        videocodec: gVideoCodec, // 'h264', 'vp8', 'vp9', 'h263', 'h265', 'h266', 'av1'
+                        audiocodec: gAudioCodec, //'opus', 'pcmu', 'pcma', 'g722', 'isac16', 'isac32'
+                        userid: input_userid,
+                        displayname: gName,
+                        remotevideoviewid: 'therevideo',
+                        localvideoviewid: 'herevideo',
+                        remotevideoviewid2: 'therevideo2',
+                        remotevideoviewid3: 'therevideo3',
+                        remotevideoviewid4: 'therevideo4',
+                        remotevideoviewid5: 'therevideo5',
+                        mirrorlocalvideo: gMirrorLocalVideo,
+                        aspublisher: gAsPublisher,
+                        usingdatachannel: gUsingData,
+                        usingvideo: gUsingVideo,
+                        usingaudio: gUsingAudio,
+                        receivingvideo: gReceivingVideo,
+                        receivingaudio: gReceivingAudio,
+                        bitrate: gBitRate,
+                        screenbitrate: gBitRate,
+                        audiobitrate: gAudioBitRate,
+                        audiostereo: gAudioStereo,
+                        showvideobps: gShowVideobps,
+                        sharescreen: gShareScreen,
+                        audiodeviceid: null,
+                        videodeviceid: defaultDeviceID,
+                        audiooutputdeviceid: null,
+                        rtmpserver: input_rtmpserver,
+                        rtmpmixtemplate: input_rtmpmixtemplate,
+                        rtmpmix: gRtmpmix,
+                        rtmpmixlayoutindex: gRtmpMixLayoutIndex,
+                        recording: gRecording,
+                        autosubscribe: gAutoSubScribe,
+                        autoplaymuted: gAutoPlayMuted,
+                        autopublish: gAutoPublish,
+                        autoresubscribing: !gAutoSubScribe,
+                        linkdownupthreshold: 50,
+                        waitpermissiontimeoutms: gWaitPermissionTimeOutMs,
+                        reportmonitordata: gReportMonitorData,
+                        reportenv: gReportEnv,
+                        candidateip: gCandidateIP,
+                        candidateport: gCandidatePort,
+                        mediaserverip: gMediaServerIP,
+                        videoprofile: gVideoProfile,
+                        // videoprofile: 'lowres','stdres','hires','fhdres','4kres','480x480@15'
+                        // videoprofile:  {
+                        //             'height': {'ideal': 240},
+                        //             'width':  {'ideal': 240}
+                        //         },
+                        screensharevideoprofile: gScreenProfile,
+                        // screensharevideoprofile: 'lowres','stdres','hires','fhdres','4kres','1280x720'
+                        multistream: gMultiStreamSDK,
+                        v4: gBRTCProtocolV4,
+                        linkdownevent: function () {
+                            console.log('linkdownevent');
+                        },
+                        linkupevent: function () {
+                            console.log('linkupevent');
+                        },
+                        userevent: gUserEvent,
+                        userevent_joinedroom: function (id, display, attribute) {
+                            console.log(
+                                'userevent_joinedroom id: ' + id + ', display: ' + display + ', attribute:' + attribute
+                            );
+                        },
+                        userevent_leavingroom: function (id, display) {
+                            console.log('userevent_leavingroom id: ' + id + ', display: ' + display);
+                            let sel = document.getElementById('feedid');
+
+                            for (const e in sel.options) {
+                                if (sel.options[e].value == id) {
+                                    sel.options.remove(e);
+                                    return;
+                                }
+                            }
+                        },
+                        sessionevent: gSessionEvent,
+                        mediastate: function (medium, on) {
+                            console.log('send medium ' + medium + ' is: ' + on);
+                        },
+                        logintimeout: 10000,
+                        logintimeoutevent: function () {
+                            console.log('timeout');
+                        },
+                        showspinner: gShowSpinner,
+                        shownovideo: true,
+                        remotevideoloading: function (idx) {
+                            console.log('remotevideoloading, index:' + idx);
+                        },
+                        remotevideoon: function (idx) {
+                            console.log('remotevideoon, index:' + idx);
+                        },
+                        remotevideooff: function (idx) {
+                            console.log('remotevideooff, index:' + idx);
+                        },
+                        remotevideocoming: function (id, display, attribute) {
+                            console.log('remotevideocoming, feedid:' + id + ':' + display + ':' + attribute);
+                            let sel = document.getElementById('feedid');
+                            sel.options.add(new Option(display, id));
+
+                            // 更新prompt控制的可用流列表
+                            if (typeof initPromptControl === 'function') {
+                                initPromptControl();
+                            }
+
+                            if (!gAutoSubScribe && gDynamicRemoteVideoView) {
+                                $('#manualvideo').append(
+                                    '<div style="width: 100%;height: 100%;" id="videoremote_' + id + '"></div>'
+                                );
+                                BRTC_SubscribeStreaming('videoremote_' + id, id);
+                            }
+
+                            var ua = navigator.userAgent.toLowerCase();
+                            if (ua.match(/MicroMessenger/i) == 'micromessenger' || ua.match(/WxWork/i) == 'wxwork') {
+                                setTimeout(x => {
+                                    const video = document.getElementById('remotevideo1');
+                                    if (video) {
+                                        video.play();
+                                    }
+                                }, 1000);
+
+                                setTimeout(x => {
+                                    const w = document.getElementById('waitingvideo1');
+                                    if (w) {
+                                        w.height = 0;
+                                        const video = document.getElementById('remotevideo1');
+                                        if (video) {
+                                            video.autoplay = false;
+                                            video.playsinline = false;
+                                            video.controls = true;
+                                        }
+                                    }
+                                }, 3000);
+                            }
+                        },
+                        remotevideoconnected_state: function (id, on) {
+                            console.log('remotevideoconnected_state, feedid:' + id + ' connected:' + on);
+                        },
+                        usingremotemediastate: gRemoteMediaState,
+                        remotemediastating: function (id, medium, on) {
+                            console.log('receiving media id:' + id + ' medium:' + medium + ' :' + on);
+                        },
+                        remotevideoleaving: function (id) {
+                            console.log('remotevideoleaving, feedid:' + id);
+                            let sel = document.getElementById('feedid');
+
+                            for (const e in sel.options) {
+                                if (sel.options[e].value == id) {
+                                    sel.options.remove(e);
+                                    return;
+                                }
+                            }
+
+                            if (!gAutoSubScribe && gDynamicRemoteVideoView) {
+                                $('#videoremote_' + id).remove();
+                            }
+                        },
+                        remotevideounpublished: function (id) {
+                            console.log('remotevideounpublished, feedid:' + id);
+                            if (!gAutoSubScribe && gDynamicRemoteVideoView) {
+                                $('#videoremote_' + id).remove();
+                            }
+                        },
+                        remotedata: function (data, label) {
+                            console.log('got remote data:' + data);
+                            $('#remotedata').append(data);
+
+                            if (gDoPong) {
+                                BRTC_SendData('pong data.');
+                            } else if (gDoPing) {
+                                setTimeout(function () {
+                                    BRTC_SendData('new ping.');
+                                }, gPingRepeatTime);
+                            }
+                        },
+                        success: function () {
+                            $('#start')
+                                .removeAttr('disabled')
+                                .html('退出')
+                                .click(function () {
+                                    $('#start').attr('disabled', true);
+
+                                    Cookies.set('state', 'init');
+                                    BRTC_Stop();
+                                    window.location.reload();
+                                });
+                            $('#details').hide();
+                            $('#rtc_logo_img').remove();
+
+                            // 显示视频容器区域
+                            $('#videoContainer').removeClass('hide').addClass('show');
+                            $('#videos').removeClass('hide').show();
+
+                            if ($('#videodevice').get(0).options.length > 1 && gAsPublisher && !gShareScreen) {
+                                $('#actions').removeClass('hide').show();
+                            }
+
+                            if ($('#audiodevice').get(0).options.length > 2 && gAsPublisher) {
+                                $('#actions').removeClass('hide').show();
+                                $('#audiodevice').removeClass('hide').show();
+                            }
+
+                            if ($('#audiooutputdevice').get(0).options.length > 2) {
+                                $('#actions').removeClass('hide').show();
+                                $('#audiooutputdevice').removeClass('hide').show();
+                            }
+
+                            if (gDoPing) {
+                                setTimeout(function () {
+                                    BRTC_SendData('ping data.');
+                                }, gPingStartupTime);
+                            }
+
+                            if (gAutologin) {
+                                Cookies.set('state', 'playing');
+                            }
+
+                            $('#msg').removeClass('hide').show();
+                            $('#sendmsg').removeClass('hide').show();
+                            $('#saveshot').removeClass('hide').show();
+                            $('#promptcontrol').removeClass('hide').show();
+
+                            if (gUsingMessageAPI) {
+                                BRTC_SetUserAttribute('{name:"red",tel:"123456789"}');
+                            }
+
+                            if (gVolumeMonitor) {
+                                setInterval(function () {
+                                    var r = BRTC_GetRemoteAudioLevels();
+
+                                    r.forEach(e => {
+                                        console.log('BRTC_GetRemoteAudioLevels: ' + JSON.stringify(e));
+                                        if (e.volume === 0) {
+                                            console.error('GetRemoteAudioLevels volume is 0: ' + JSON.stringify(e));
+                                            console.error(e);
+                                        }
+                                    });
+                                }, 5000);
+                            }
+                        },
+                        localvideopublishing: function () {
+                            $('#herevideo').block({
+                                message: '<b>Publishing...</b>',
+                                css: {
+                                    border: 'none',
+                                    backgroundColor: 'transparent',
+                                    color: 'white'
+                                }
+                            });
+                        },
+                        localvideoconnected_state: function (on) {
+                            console.log('localvideoconnected_state, connected:' + on);
+                        },
+                        localvideopublished_ok: function () {
+                            console.log('localvideopublished_ok.');
+                            $('#herevideo').unblock();
+                            if (gRequest['canvas']) {
+                                const canvas = document.querySelector('canvas');
+                                BRTC_ReplaceStream(canvas.captureStream(15));
+                            }
+                        },
+                        error: function (error) {
+                            console.log('BRTC: ' + error);
+
+                            if (!gAutoRelogin) {
+                                alert('BRTC: ' + error);
+                                window.location.reload();
+                                $('#start').removeAttr('disabled');
+                            } else {
+                                setTimeout(function () {
+                                    console.log('Timer auto relogin: ');
+                                    loginBRTC();
+                                }, 3000);
+                                BRTC_Stop();
+                            }
+                        },
+                        destroyed: function (error) {
+                            if (!gAutoRelogin) {
+                                window.location.reload();
+                            }
+                        },
+                        onlocalstream: function (stream, name) {
+                            // local stream for display sonic wave
+                            console.log('onlocalstream name: ' + name);
+                        },
+                        onlocalstream_end: function (name) {
+                            // end event of local stream
+                            console.log('onlocalstream_end name: ' + name);
+                        },
+                        // localvideopublished_closed: function() {
+                        //     console.log('localvideopublished_closed by server, please do StartPublish again');
+                        // },
+                        remotevideo_closed: function (feedid) {
+                            console.log(
+                                'remotevideo_closed(feedid: ' + feedid + ') by server, please do SubScribing again'
+                            );
+                        },
+                        onmessage: function (msg) {
+                            // event onmessage.
+                            console.log('onmessage id: ' + msg.id + ' data: ' + msg.data);
+                            $('#remotedata').append(msg.data);
+                        },
+                        onattribute: function (a) {
+                            // event onattribute
+                            console.log('onattribute id: ' + a.id + ' attribute: ' + a.attribute);
+                        },
+                        onrtmpstreaming: function (mode, url, status) {
+                            // event onrtmpstreaming
+                            console.log('onrtmpstreaming: mode: ' + mode + ', url: ' + url + ', status: ' + status);
+                        },
+                        onrecording: function (e) {
+                            console.log('onrecording: status: ' + e.status);
+                        },
+                        onmsgdelayinfo: function (e) {
+                            console.log(
+                                'onmsgdelayinfo: id: ' + e.id + ', tag: ' + e.data + ' , delay: ' + e.delayms + 'ms'
+                            );
+                        },
+                        ongetsharescreenstream: function () {
+                            var p = new Promise((resolve, reject) => {
+                                if (gSharescreenStream) {
+                                    resolve(gSharescreenStream);
+                                } else {
+                                    reject('No sharescreen Stream');
+                                }
+                            });
+                            return p;
+                        }
+                    });
+                    Cookies.set('roomname', input_roomname);
+                    Cookies.set('appid', input_appid);
+                    Cookies.set('userid', input_userid);
+                    Cookies.set('token', input_token);
+                    Cookies.set('brtcserver', input_brtcserver);
+                    Cookies.set('rtmpserver', input_rtmpserver);
+                    Cookies.set('rtmpmixtemplate', input_rtmpmixtemplate);
+                }
+                function loadDevice() {
+                    let callback = {
+                        success: function (devices) {
+                            let sel = document.getElementById('videodevice');
+
+                            while (sel.options.length) {
+                                sel.remove(0);
+                            }
+
+                            for (let i = 0; i < devices.length; i++) {
+                                sel.options.add(
+                                    new Option(devices[i].label || 'camera ' + (i + 1), devices[i].deviceId)
+                                );
+                                if (devices[i].label.includes('FaceTime')) {
+                                    defaultDeviceID = devices[i].deviceId;
+                                    sel.options.selectedIndex = i;
+                                }
+                            }
+
+                            $('#videodevice').change(function () {
+                                BRTC_ReplaceVideo($('#videodevice').val());
+                                defaultDeviceID = $('#videodevice').val();
+                                BRTC_SetParamSettings({videodeviceid: defaultDeviceID});
+                                // 更新prompt控制的设备列表
+                                if (typeof initPromptControl === 'function') {
+                                    initPromptControl();
+                                }
+                            });
+                        }
+                    };
+                    BRTC_GetVideoDevices(callback);
+
+                    let audio_callback = {
+                        success: function (devices) {
+                            let sel = document.getElementById('audiodevice');
+
+                            while (sel.options.length) {
+                                sel.remove(0);
+                            }
+
+                            for (let i = 0; i < devices.length; i++) {
+                                sel.options.add(
+                                    new Option(devices[i].label || 'microphone ' + (i + 1), devices[i].deviceId)
+                                );
+                            }
+
+                            $('#audiodevice').change(function () {
+                                BRTC_ReplaceAudio($('#audiodevice').val());
+                                BRTC_SetParamSettings({audiodeviceid: $('#audiodevice').val()});
+                            });
+                        }
+                    };
+                    BRTC_GetAudioInputDevices(audio_callback);
+
+                    let audio_output_callback = {
+                        success: function (devices) {
+                            let sel = document.getElementById('audiooutputdevice');
+
+                            while (sel.options.length) {
+                                sel.remove(0);
+                            }
+
+                            for (let i = 0; i < devices.length; i++) {
+                                sel.options.add(
+                                    new Option(devices[i].label || 'speaker ' + (i + 1), devices[i].deviceId)
+                                );
+                            }
+
+                            $('#audiooutputdevice').change(function () {
+                                BRTC_SetAudioOutputDevice($('#audiooutputdevice').val());
+                            });
+                        }
+                    };
+                    BRTC_GetAudioOutputDevices(audio_output_callback);
+
+                    let devices_callback = {
+                        success: function (devices) {
+                            console.log('all devices length: ' + devices.length);
+                        }
+                    };
+
+                    BRTC_SetDevicesChangeListener(function (event) {
+                        console.log('on devices event: ' + event);
+                        // BRTC_GetAllDevices(devices_callback);
+                        BRTC_GetVideoDevices(callback);
+                        BRTC_GetAudioInputDevices(audio_callback);
+                        BRTC_GetAudioOutputDevices(audio_output_callback);
+                    });
+                }
+
+                if (gAsPublisher && (gUsingVideo || gUsingAudio)) {
+                    setTimeout(function () {
+                        loadDevice();
+                    }, 300);
+                }
+
+                if (gAutologin) {
+                    if (gState === 'playing') {
+                        $('#login').hide();
+                        $('#auto').removeClass('hide').show();
+                        $('#continueplaying').click(function () {
+                            $('#login').removeClass('hide').show();
+                            $('#start').trigger('click');
+                        });
+                    }
+                }
+
+                [
+                    'manualvideo',
+                    'therevideo',
+                    'therevideo1',
+                    'therevideo2',
+                    'therevideo3',
+                    'therevideo4',
+                    'therevideo5'
+                ].forEach(i => {
+                    $('#' + i).dblclick(function () {
+                        if (document.fullscreenElement) {
+                            if (document.webkitIsFullScreen) {
+                                document.webkitCancelFullScreen();
+                            } else if (document.mozFullScreen) {
+                                document.mozCancelFullScreen();
+                            } else if (document.fullScreen) {
+                                document.cancelFullScreen();
+                            }
+                        } else {
+                            $('#' + i)
+                                .get(0)
+                                .requestFullscreen();
+                        }
+                    });
+                });
+
+                // Prompt输入和视频流切换功能
+                var gCurrentVideoDeviceIndex = 0;
+                var gCurrentRemoteVideoIndex = 0;
+                var gAvailableVideoDevices = [];
+                var gAvailableRemoteFeeds = [];
+                var gPromptLocalPreviewEl = null;
+                var gPromptDemoPreviewWrapper = null;
+                var gPromptSceneCanvasEl = null;
+                var gPromptSceneCtx = null;
+                var gPromptCameraStream = null;
+                var gPromptCanvasStream = null;
+                var gPromptCanvasAnimationFrame = null;
+                var gPromptCanvasTrack = null;
+                var gPromptCanvasInterval = null;
+                var gPromptCanvasVisibilityHandlerBound = false;
+                var gPromptSceneText = 'default scene';
+
+                function ensurePromptDemoElements() {
+                    if (!gPromptDemoPreviewWrapper) {
+                        gPromptDemoPreviewWrapper = document.getElementById('promptDemoPreview');
+                    }
+                    if (!gPromptLocalPreviewEl) {
+                        gPromptLocalPreviewEl = document.getElementById('promptLocalPreview');
+                    }
+                    if (!gPromptSceneCanvasEl) {
+                        gPromptSceneCanvasEl = document.getElementById('promptSceneCanvas');
+                        if (gPromptSceneCanvasEl) {
+                            gPromptSceneCtx = gPromptSceneCanvasEl.getContext('2d');
+                            if (!gPromptSceneCanvasEl.dataset.initVisibility) {
+                                gPromptSceneCanvasEl.style.visibility = 'hidden';
+                                gPromptSceneCanvasEl.dataset.initVisibility = '1';
+                            }
+                        }
+                    }
+                }
+
+                function showPromptDemoPreview() {
+                    ensurePromptDemoElements();
+                    if (
+                        gPromptDemoPreviewWrapper &&
+                        (gPromptDemoPreviewWrapper.style.display === 'none' ||
+                            gPromptDemoPreviewWrapper.classList.contains('hide'))
+                    ) {
+                        gPromptDemoPreviewWrapper.classList.remove('hide');
+                        gPromptDemoPreviewWrapper.style.display = 'flex';
+                    }
+                }
+
+                function promptStreamHasLiveTrack(stream) {
+                    if (!stream) {
+                        return false;
+                    }
+                    return stream.getTracks().some(function (track) {
+                        return track.readyState === 'live';
+                    });
+                }
+
+                function stopPromptStream(stream) {
+                    if (!stream) {
+                        return;
+                    }
+                    stream.getTracks().forEach(function (track) {
+                        if (track.readyState === 'live') {
+                            track.stop();
+                        }
+                    });
+                }
+
+                function stopPromptCanvasRender() {
+                    if (gPromptCanvasAnimationFrame) {
+                        cancelAnimationFrame(gPromptCanvasAnimationFrame);
+                        gPromptCanvasAnimationFrame = null;
+                    }
+                    if (gPromptCanvasInterval) {
+                        clearInterval(gPromptCanvasInterval);
+                        gPromptCanvasInterval = null;
+                    }
+                    if (gPromptCanvasVisibilityHandlerBound) {
+                        document.removeEventListener('visibilitychange', handlePromptCanvasVisibilityChange);
+                        gPromptCanvasVisibilityHandlerBound = false;
+                    }
+                }
+
+                function renderPromptSceneFrame() {
+                    if (!gPromptSceneCanvasEl || !gPromptSceneCtx) {
+                        return;
+                    }
+
+                    var hue = (performance.now() / 25) % 360;
+                    gPromptSceneCtx.fillStyle = 'hsl(' + hue + ', 70%, 40%)';
+                    gPromptSceneCtx.fillRect(0, 0, gPromptSceneCanvasEl.width, gPromptSceneCanvasEl.height);
+                    gPromptSceneCtx.fillStyle = '#fff';
+                    gPromptSceneCtx.font = '28px sans-serif';
+                    gPromptSceneCtx.fillText('Prompt: ' + gPromptSceneText, 24, 60);
+                    gPromptSceneCtx.fillText('Time: ' + (performance.now() / 1000).toFixed(1) + 's', 24, 100);
+
+                    if (gPromptCanvasTrack && typeof gPromptCanvasTrack.requestFrame === 'function') {
+                        try {
+                            gPromptCanvasTrack.requestFrame();
+                        } catch (err) {
+                            console.warn('requestFrame failed:', err);
+                        }
+                    }
+                }
+
+                function promptCanvasRAFLoop() {
+                    renderPromptSceneFrame();
+                    gPromptCanvasAnimationFrame = requestAnimationFrame(promptCanvasRAFLoop);
+                }
+
+                function handlePromptCanvasVisibilityChange() {
+                    if (!gPromptSceneCanvasEl || !gPromptSceneCtx) {
+                        return;
+                    }
+
+                    if (document.hidden) {
+                        if (gPromptCanvasAnimationFrame) {
+                            cancelAnimationFrame(gPromptCanvasAnimationFrame);
+                            gPromptCanvasAnimationFrame = null;
+                        }
+                        if (!gPromptCanvasInterval) {
+                            gPromptCanvasInterval = setInterval(function () {
+                                renderPromptSceneFrame();
+                            }, 1000 / 12);
+                        }
+                    } else {
+                        if (gPromptCanvasInterval) {
+                            clearInterval(gPromptCanvasInterval);
+                            gPromptCanvasInterval = null;
+                        }
+                        if (!gPromptCanvasAnimationFrame) {
+                            gPromptCanvasAnimationFrame = requestAnimationFrame(promptCanvasRAFLoop);
+                        }
+                    }
+                }
+
+                function startPromptCanvasRender() {
+                    ensurePromptDemoElements();
+                    if (!gPromptSceneCanvasEl || !gPromptSceneCtx) {
+                        return;
+                    }
+
+                    stopPromptCanvasRender();
+                    if (!gPromptCanvasVisibilityHandlerBound) {
+                        document.addEventListener('visibilitychange', handlePromptCanvasVisibilityChange);
+                        gPromptCanvasVisibilityHandlerBound = true;
+                    }
+
+                    if (document.hidden) {
+                        gPromptCanvasInterval = setInterval(function () {
+                            renderPromptSceneFrame();
+                        }, 1000 / 12);
+                    } else {
+                        gPromptCanvasAnimationFrame = requestAnimationFrame(promptCanvasRAFLoop);
+                    }
+
+                    renderPromptSceneFrame();
+                }
+
+                function applyPromptDemoStream(stream) {
+                    ensurePromptDemoElements();
+                    if (!stream) {
+                        return;
+                    }
+
+                    showPromptDemoPreview();
+
+                    if (gPromptLocalPreviewEl) {
+                        gPromptLocalPreviewEl.srcObject = stream;
+                        if (typeof gPromptLocalPreviewEl.play === 'function') {
+                            gPromptLocalPreviewEl.play().catch(function (err) {
+                                console.warn('Prompt preview play error:', err);
+                            });
+                        }
+                    }
+
+                    if (gPromptSceneCanvasEl) {
+                        if (stream === gPromptCanvasStream) {
+                            gPromptSceneCanvasEl.style.visibility = 'visible';
+                        } else {
+                            gPromptSceneCanvasEl.style.visibility = 'hidden';
+                        }
+                    }
+
+                    if (gAsPublisher && typeof BRTC_ReplaceStream === 'function') {
+                        try {
+                            BRTC_ReplaceStream(stream);
+                        } catch (err) {
+                            console.error('BRTC_ReplaceStream error:', err);
+                            updatePromptStatus('推流替换失败: ' + (err.message || err), 'warning');
+                        }
+                    }
+                }
+
+                async function switchPromptDemoToCamera() {
+                    ensurePromptDemoElements();
+                    try {
+                        if (!promptStreamHasLiveTrack(gPromptCameraStream)) {
+                            stopPromptStream(gPromptCameraStream);
+                            gPromptCameraStream = await navigator.mediaDevices.getUserMedia({
+                                video: true,
+                                audio: false
+                            });
+                        }
+
+                        stopPromptCanvasRender();
+                        if (gPromptCanvasStream) {
+                            stopPromptStream(gPromptCanvasStream);
+                            gPromptCanvasStream = null;
+                            gPromptCanvasTrack = null;
+                        }
+
+                        applyPromptDemoStream(gPromptCameraStream);
+                        updatePromptStatus('已切换到摄像头推流', 'success');
+                    } catch (error) {
+                        console.error('switchPromptDemoToCamera error:', error);
+                        updatePromptStatus('获取摄像头失败: ' + (error.message || error), 'error');
+                    }
+                }
+
+                async function switchPromptDemoToGeneratedScene(rawPrompt) {
+                    ensurePromptDemoElements();
+                    gPromptSceneText = rawPrompt && rawPrompt.trim() ? rawPrompt.trim() : 'default scene';
+
+                    try {
+                        stopPromptCanvasRender();
+                        if (gPromptCanvasStream) {
+                            stopPromptStream(gPromptCanvasStream);
+                            gPromptCanvasStream = null;
+                            gPromptCanvasTrack = null;
+                        }
+
+                        if (!gPromptSceneCanvasEl) {
+                            updatePromptStatus('找不到生成场景画布', 'error');
+                            return;
+                        }
+
+                        startPromptCanvasRender();
+                        gPromptCanvasStream = gPromptSceneCanvasEl.captureStream(30);
+                        if (gPromptCanvasStream) {
+                            var promptTracks = gPromptCanvasStream.getVideoTracks();
+                            gPromptCanvasTrack = promptTracks && promptTracks.length ? promptTracks[0] : null;
+                        }
+                        applyPromptDemoStream(gPromptCanvasStream);
+                        updatePromptStatus('已切换到 Prompt 场景: ' + gPromptSceneText, 'success');
+                    } catch (error) {
+                        console.error('switchPromptDemoToGeneratedScene error:', error);
+                        updatePromptStatus('生成场景失败: ' + (error.message || error), 'error');
+                    }
+                }
+
+                // 初始化prompt功能
+                function initPromptControl() {
+                    // 获取可用摄像头列表
+                    if (gAsPublisher && gUsingVideo) {
+                        let sel = document.getElementById('videodevice');
+                        if (sel && sel.options.length > 0) {
+                            gAvailableVideoDevices = [];
+                            for (let i = 0; i < sel.options.length; i++) {
+                                gAvailableVideoDevices.push({
+                                    deviceId: sel.options[i].value,
+                                    label: sel.options[i].text
+                                });
+                            }
+                            gCurrentVideoDeviceIndex = sel.selectedIndex;
+                        }
+                    }
+
+                    // 获取可用远程流列表
+                    let feedSel = document.getElementById('feedid');
+                    if (feedSel && feedSel.options.length > 0) {
+                        gAvailableRemoteFeeds = [];
+                        for (let i = 0; i < feedSel.options.length; i++) {
+                            if (feedSel.options[i].value != 999999999) {
+                                gAvailableRemoteFeeds.push({
+                                    feedId: parseInt(feedSel.options[i].value, 10),
+                                    label: feedSel.options[i].text
+                                });
+                            }
+                        }
+                    }
+                }
+
+                // 切换摄像头
+                function switchCamera() {
+                    if (gAvailableVideoDevices.length === 0) {
+                        updatePromptStatus('没有可用的摄像头设备', 'error');
+                        return;
+                    }
+
+                    gCurrentVideoDeviceIndex = (gCurrentVideoDeviceIndex + 1) % gAvailableVideoDevices.length;
+                    var device = gAvailableVideoDevices[gCurrentVideoDeviceIndex];
+
+                    try {
+                        BRTC_ReplaceVideo(device.deviceId);
+                        if (defaultDeviceID !== device.deviceId) {
+                            defaultDeviceID = device.deviceId;
+                            BRTC_SetParamSettings({videodeviceid: device.deviceId});
+                        }
+                        // 更新下拉框
+                        let sel = document.getElementById('videodevice');
+                        if (sel) {
+                            sel.selectedIndex = gCurrentVideoDeviceIndex;
+                        }
+                        updatePromptStatus('已切换到摄像头: ' + device.label, 'success');
+                    } catch (e) {
+                        updatePromptStatus('切换摄像头失败: ' + e.message, 'error');
+                    }
+                }
+
+                // 切换屏幕
+                function switchScreen() {
+                    try {
+                        BRTC_SwitchScreen();
+                        updatePromptStatus('已切换到屏幕分享', 'success');
+                    } catch (e) {
+                        updatePromptStatus('切换屏幕失败: ' + e.message, 'error');
+                    }
+                }
+
+                // 切换到指定场景
+                function switchToScene(sceneNum) {
+                    var videoViewIds = ['therevideo', 'therevideo2', 'therevideo3', 'therevideo4', 'therevideo5'];
+                    var targetViewId = videoViewIds[sceneNum - 1];
+
+                    if (!targetViewId) {
+                        updatePromptStatus('场景' + sceneNum + '不存在，可用场景：1-5', 'error');
+                        return;
+                    }
+
+                    // 隐藏所有视频容器
+                    videoViewIds.forEach(function (id) {
+                        $('#' + id).hide();
+                    });
+
+                    // 显示目标场景
+                    $('#' + targetViewId).show();
+
+                    // 如果有可用的远程流，尝试订阅到该场景
+                    if (gAvailableRemoteFeeds.length > 0) {
+                        var feedIndex = (sceneNum - 1) % gAvailableRemoteFeeds.length;
+                        var feed = gAvailableRemoteFeeds[feedIndex];
+                        try {
+                            if (last_sub_feedid !== 0 && last_sub_feedid !== feed.feedId) {
+                                var that_sub_feedid = last_sub_feedid;
+                                setTimeout(function () {
+                                    BRTC_StopSubscribeStreaming(that_sub_feedid);
+                                }, 500);
+                            }
+                            BRTC_SubscribeStreaming(targetViewId, feed.feedId);
+                            last_sub_feedid = feed.feedId;
+                            updatePromptStatus('已切换到场景' + sceneNum + '，订阅流: ' + feed.label, 'success');
+                        } catch (e) {
+                            updatePromptStatus('已切换到场景' + sceneNum + '，但订阅流失败: ' + e.message, 'warning');
+                        }
+                    } else {
+                        updatePromptStatus('已切换到场景' + sceneNum, 'success');
+                    }
+                }
+
+                // 显示本地视频
+                function showLocalVideo() {
+                    $('#therevideo, #therevideo2, #therevideo3, #therevideo4, #therevideo5').hide();
+                    $('#herevideo').parent().show();
+                    updatePromptStatus('已显示本地视频', 'success');
+                }
+
+                // 显示远程视频
+                function showRemoteVideo() {
+                    $('#herevideo').parent().hide();
+                    $('#therevideo').show();
+                    updatePromptStatus('已显示远程视频', 'success');
+                }
+
+                // 切换到指定用户
+                function switchToUser(userNum) {
+                    if (gAvailableRemoteFeeds.length === 0) {
+                        updatePromptStatus('没有可用的远程流', 'error');
+                        return;
+                    }
+
+                    var feedIndex = (userNum - 1) % gAvailableRemoteFeeds.length;
+                    var feed = gAvailableRemoteFeeds[feedIndex];
+
+                    try {
+                        if (last_sub_feedid !== 0 && last_sub_feedid !== feed.feedId) {
+                            var that_sub_feedid = last_sub_feedid;
+                            setTimeout(function () {
+                                BRTC_StopSubscribeStreaming(that_sub_feedid);
+                            }, 500);
+                        }
+                        BRTC_SubscribeStreaming('therevideo', feed.feedId);
+                        last_sub_feedid = feed.feedId;
+                        $('#therevideo').show();
+                        updatePromptStatus('已切换到用户' + userNum + ': ' + feed.label, 'success');
+                    } catch (e) {
+                        updatePromptStatus('切换到用户' + userNum + '失败: ' + e.message, 'error');
+                    }
+                }
+
+                // 切换到指定feed
+                function switchToFeed(feedId) {
+                    try {
+                        if (last_sub_feedid !== 0 && last_sub_feedid !== feedId) {
+                            var that_sub_feedid = last_sub_feedid;
+                            setTimeout(function () {
+                                BRTC_StopSubscribeStreaming(that_sub_feedid);
+                            }, 500);
+                        }
+                        BRTC_SubscribeStreaming('therevideo', feedId);
+                        last_sub_feedid = feedId;
+                        $('#therevideo').show();
+                        updatePromptStatus('已切换到流: ' + feedId, 'success');
+                    } catch (e) {
+                        updatePromptStatus('切换到流' + feedId + '失败: ' + e.message, 'error');
+                    }
+                }
+
+                // 更新状态提示
+                function updatePromptStatus(message, type) {
+                    var statusDiv = $('#promptstatus');
+                    var color = '#666';
+                    if (type === 'success') {
+                        color = '#28a745';
+                    } else if (type === 'error') {
+                        color = '#dc3545';
+                    } else if (type === 'warning') {
+                        color = '#ffc107';
+                    } else if (type === 'info') {
+                        color = '#17a2b8';
+                    }
+                    statusDiv.css('color', color).text(message);
+
+                    // 3秒后清除状态
+                    setTimeout(function () {
+                        if (statusDiv.text() === message) {
+                            statusDiv.text('');
+                        }
+                    }, 3000);
+                }
+
+                // 绑定事件
+
+                $('#prompt-generate-scene').click(function () {
+                    var prompt = $('#promptinput').val();
+                    switchPromptDemoToGeneratedScene(prompt);
+                });
+
+                $('#prompt-restore-camera').click(function () {
+                    switchPromptDemoToCamera();
+                });
+
+                $('#prompt-share-screen').click(function () {
+                    switchScreen();
+                });
+
+                // 回车键提交
+                $('#promptinput').keypress(function (e) {
+                    if (e.which === 13) {
+                        $('#promptsubmit').click();
+                    }
+                });
+
+                // 在设备加载完成后初始化
+                setTimeout(function () {
+                    initPromptControl();
+                }, 1000);
+
+                // 监听feedid变化，更新可用远程流列表
+                if (document.getElementById('feedid')) {
+                    var feedObserver = new MutationObserver(function (mutations) {
+                        initPromptControl();
+                    });
+                    feedObserver.observe(document.getElementById('feedid'), {
+                        childList: true,
+                        subtree: true
+                    });
+                }
+            });
+
+            function getShot(video, x, y, width, height) {
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+
+                ctx.drawImage(video, x, y, width, height, 0, 0, width, height);
+
+                return canvas.toDataURL();
+            }
+
+            function SaveSnapShot() {
+                const a = document.createElement('a');
+                var len = document.getElementsByTagName('video').length;
+                var video = document.getElementsByTagName('video')[len - 1];
+                a.style.display = 'none';
+                a.href = getShot(video, 0, 0, video.videoWidth, video.videoHeight);
+                a.download = 'Snapshot.png';
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                }, 1000);
+            }
+
+            function OnGotoMeetingDemo() {
+                window.location.href =
+                    'https://brtc-sdk.cdn.bcebos.com/web/demo/meeting/index.html' +
+                    '#home' +
+                    (window.location.search || '?a=' + $('#appid').val() + '&r=' + $('#roomname').val());
+            }
+        </script>
+
+        <div class="gotoBaidu">
+            <div class="gotobd">
+                <a class="dl_subxm" href="https://brtc.cdn.bcebos.com/brtc.html?a=appjfkryqbzyns5&amp;r=8888#wiki"
+                    >Wiki</a
+                >&nbsp;&nbsp;
+            </div>
+        </div>
+
+        <div class="demo-container" id="login">
+            <div class="login" style="text-align: center">
+                <img
+                    src="./Baidu-RTC_files/rtc_logo.png"
+                    id="rtc_logo_img"
+                    style="max-width: 120px; height: auto; margin-bottom: 20px"
+                />
+                <div>
+                    <div class="rtc-title-font-color">百度智能云RTC</div>
+                </div>
+
+                <div id="details">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="input-group">
+                                <label class="rtc-font-color" for="roomname">房间号</label>
+                                <input
+                                    autocomplete="off"
+                                    class="rtc-input-line"
+                                    type="text"
+                                    placeholder="Room Name"
+                                    id="roomname"
+                                    size="40"
+                                    value="8888"
+                                />
+                            </div>
+                            <div class="input-group hide">
+                                <label class="rtc-font-color" for="userid">用户ID</label>
+                                <input
+                                    autocomplete="off"
+                                    class="rtc-input-line"
+                                    type="text"
+                                    placeholder="User id"
+                                    id="userid"
+                                    size="40"
+                                    value="100573471"
+                                />
+                            </div>
+                            <div class="input-group">
+                                <label class="rtc-font-color" for="appid">AppID</label>
+                                <input
+                                    autocomplete="off"
+                                    class="rtc-input-line"
+                                    type="text"
+                                    placeholder="AppID from Baidu"
+                                    id="appid"
+                                    size="40"
+                                    value="appjfkryqbzyns5"
+                                />
+                            </div>
+                            <div class="input-group hide">
+                                <label class="rtc-font-color" for="token">Token</label>
+                                <input
+                                    autocomplete="off"
+                                    class="rtc-input-line"
+                                    type="text"
+                                    placeholder="token"
+                                    id="token"
+                                    size="80"
+                                    value="token"
+                                />
+                            </div>
+                            <div class="input-group hide">
+                                <label class="rtc-font-color" for="brtcserver">BRTC服务器</label>
+                                <input
+                                    autocomplete="off"
+                                    class="rtc-input-line"
+                                    type="text"
+                                    placeholder="wss://rtc.exp.bcelive.com/janus"
+                                    id="brtcserver"
+                                    size="40"
+                                    value="wss://rtc.exp.bcelive.com/janus"
+                                />
+                            </div>
+                            <div class="input-group hide">
+                                <label class="rtc-font-color" for="rtmpserver">RTMP服务器</label>
+                                <input
+                                    autocomplete="off"
+                                    class="rtc-input-line"
+                                    type="text"
+                                    placeholder="rtmp://"
+                                    id="rtmpserver"
+                                    size="40"
+                                    value=""
+                                />
+                            </div>
+                            <div class="input-group hide">
+                                <label class="rtc-font-color" for="rtmpmixtemplate">RTMP混流模板</label>
+                                <input
+                                    autocomplete="off"
+                                    class="rtc-input-line"
+                                    type="text"
+                                    placeholder=""
+                                    id="rtmpmixtemplate"
+                                    size="40"
+                                    value=""
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button
+                    class="button big blue"
+                    type="button"
+                    autocomplete="off"
+                    id="start"
+                    style="width: 100%; max-width: 300px; margin-top: 20px"
+                >
+                    进入房间
+                </button>
+                <div class="hide rtc-font-color" id="actions">
+                    <div class="input-group">
+                        <label class="rtc-font-color" for="videodevice">切换摄像头</label>
+                        <select class="rtc-font-color" id="videodevice">
+                            <option value="209142ca16002e3290689382a051459091c74314fbaaa55344b207f8eb44d192">
+                                FaceTime高清摄像头 (B6DF:451A)
+                            </option>
+                        </select>
+                    </div>
+                    <div class="input-group hide">
+                        <label class="rtc-font-color" for="audiodevice">切换麦克风</label>
+                        <select class="rtc-font-color" id="audiodevice">
+                            <option value="0a7f14fd303e53758e7f208ad6e0ca0f5ae33102972c7572a4a545793a068d49">
+                                MacBook Pro麦克风 (Built-in)
+                            </option>
+                            <option value="882e4340834710041488751218d1082dc5a5e8d1e224a6dfff29301554803703">
+                                “iPhone”的麦克风
+                            </option>
+                            <option value="5d82f15d59035770d6cd7d2e857274b8e51427d9c6c70e3aa383d84dfcdd2171">
+                                外置麦克风 (Built-in)
+                            </option>
+                            <option value="default">默认 - 外置麦克风 (Built-in)</option>
+                        </select>
+                    </div>
+                    <div class="input-group hide">
+                        <label class="rtc-font-color" for="audiooutputdevice">切换扬声器</label>
+                        <select class="rtc-font-color" id="audiooutputdevice">
+                            <option value="default">默认 - 外置耳机 (Built-in)</option>
+                            <option value="042109d416ccc1680a1b4a29049769b66527d13f2ae057d1190405328bcce499">
+                                外置耳机 (Built-in)
+                            </option>
+                            <option value="cb9b0ea5c1b3fced4ea718c18b801db4d5206736f0c268f246dd0a158c4ffdc0">
+                                MacBook Pro扬声器 (Built-in)
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="hide rtc-font-color" id="pullvideo">
+                    <div class="input-group">
+                        <label class="rtc-font-color" for="feedid">选择拉流</label>
+                        <select class="rtc-font-color" id="feedid"></select>
+                    </div>
+                </div>
+                <!-- Prompt输入区域 -->
+                <div class="hide rtc-font-color" id="promptcontrol">
+                    <div class="rtc-title-font-color">智能视频流切换</div>
+                    <div class="input-group">
+                        <!-- <label class="rtc-font-color" for="promptinput">输入 Prompt</label> -->
+                        <input type="text" id="promptinput" placeholder="输入prompt" />
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px">
+                        <button type="button" id="prompt-generate-scene" class="button green">生成场景推流</button>
+                        <button type="button" id="prompt-restore-camera" class="button gray">恢复摄像头推流</button>
+                        <button
+                            type="button"
+                            id="prompt-share-screen"
+                            class="button"
+                            style="background: linear-gradient(135deg, #17a2b8 0%, #20c9d8 100%); color: white"
+                        >
+                            分享屏幕
+                        </button>
+                    </div>
+                    <div id="promptDemoPreview">
+                        <div>
+                            <div class="rtc-font-color" style="margin-bottom: 8px">本地推流预览</div>
+                            <video id="promptLocalPreview" autoplay playsinline muted></video>
+                        </div>
+                        <div>
+                            <div class="rtc-font-color" style="margin-bottom: 8px">生成场景画布</div>
+                            <canvas id="promptSceneCanvas" width="640" height="360"></canvas>
+                        </div>
+                    </div>
+                    <div id="promptstatus"></div>
+                </div>
+            </div>
+
+            <div class="therevideo-container hide" id="videoContainer">
+                <div class="therevideo-item">
+                    <div class="video-label">本人</div>
+                    <div class="m-netcall" id="videos">
+                        <div id="herevideo"></div>
+                    </div>
+                </div>
+                <div class="therevideo-item" id="therevideo" title="双击全屏">
+                    <div class="video-label">用户1</div>
+                </div>
+                <div class="therevideo-item" id="therevideo2" title="双击全屏">
+                    <div class="video-label">用户2</div>
+                </div>
+            </div>
+        </div>
+        <div class="hide" id="auto">
+            <div class="rtc-title-font-color" id="continueplaying" style="width: 500px; text-align: center">
+                拉流播放时请不要刷新页面，点击[继续播放]-&gt;
+            </div>
+        </div>
+
+        <a name="wiki">Demo 参数说明</a>
+        <p>例子: https://brtc.cdn.bcebos.com/brtc.html?r=8888</p>
+
+        <table class="hide">
+            <tbody>
+                <tr>
+                    <td>请求参数名</td>
+                    <td>缩写</td>
+                    <td>含义</td>
+                    <td>默认值</td>
+                    <td>示例</td>
+                </tr>
+                <tr>
+                    <td>roomname</td>
+                    <td>r</td>
+                    <td>房间名</td>
+                    <td>'8888'</td>
+                    <td>r=8888</td>
+                </tr>
+                <tr>
+                    <td>appid</td>
+                    <td>a</td>
+                    <td>AppID 值</td>
+                    <td>''</td>
+                    <td>a=appid</td>
+                </tr>
+                <tr>
+                    <td>userid</td>
+                    <td>u</td>
+                    <td>用户ID号</td>
+                    <td>随机值</td>
+                    <td>u=10099</td>
+                </tr>
+                <tr>
+                    <td>displayname</td>
+                    <td>d</td>
+                    <td>用户显示名称</td>
+                    <td></td>
+                    <td>d=Tom</td>
+                </tr>
+                <tr>
+                    <td>token</td>
+                    <td>t</td>
+                    <td>token串</td>
+                    <td>对于开启了CA的appid 需要token</td>
+                    <td>t=no_token</td>
+                </tr>
+                <tr>
+                    <td>listener_only</td>
+                    <td>l</td>
+                    <td>是否只是听众</td>
+                    <td>不是听众</td>
+                    <td>l=1</td>
+                </tr>
+                <tr>
+                    <td>sharescreen</td>
+                    <td>ss</td>
+                    <td>是否屏幕分享</td>
+                    <td></td>
+                    <td>ss=1</td>
+                </tr>
+                <tr>
+                    <td>brtcserver</td>
+                    <td>s</td>
+                    <td>BRTC服务器地址</td>
+                    <td></td>
+                    <td>s=wss://rtc.exp.bcelive.com/janus</td>
+                </tr>
+                <tr>
+                    <td>rtmpserver</td>
+                    <td>-</td>
+                    <td>RTMP转推服务器地址</td>
+                    <td>''</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>rtmpmix</td>
+                    <td>-</td>
+                    <td>RTMP转推是否混流</td>
+                    <td>true</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>rtmpmixtemplate</td>
+                    <td>-</td>
+                    <td>RTMP转推混流模版</td>
+                    <td>无</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>rtmpmixlayoutindex</td>
+                    <td>-</td>
+                    <td>RTMP转推混流模版布局位置</td>
+                    <td>无</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>audiocodec</td>
+                    <td>ac</td>
+                    <td>音频编码名称</td>
+                    <td>opus</td>
+                    <td>ac=opus</td>
+                </tr>
+                <tr>
+                    <td>videocodec</td>
+                    <td>vc</td>
+                    <td>视频编码名称</td>
+                    <td>h264</td>
+                    <td>vc=h264</td>
+                </tr>
+                <tr>
+                    <td>no_autosubscribe</td>
+                    <td>ns</td>
+                    <td>不自动拉流</td>
+                    <td></td>
+                    <td>ns=1</td>
+                </tr>
+                <tr>
+                    <td>no_autopublish</td>
+                    <td>np</td>
+                    <td>不自动推流</td>
+                    <td></td>
+                    <td>np=1</td>
+                </tr>
+                <tr>
+                    <td>no_video</td>
+                    <td>nv</td>
+                    <td>推流不使用视频</td>
+                    <td></td>
+                    <td>nv=1</td>
+                </tr>
+                <tr>
+                    <td>no_audio</td>
+                    <td>na</td>
+                    <td>推流不使用音频</td>
+                    <td></td>
+                    <td>na=1</td>
+                </tr>
+                <tr>
+                    <td>no_receivingvideo</td>
+                    <td>-</td>
+                    <td>不接收视频</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>no_receivingaudio</td>
+                    <td>-</td>
+                    <td>不接收音频</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>no_showvideobps</td>
+                    <td>-</td>
+                    <td>不显示码率</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>videoprofile</td>
+                    <td>vp</td>
+                    <td>视频配置</td>
+                    <td></td>
+                    <td>vp=240x240@15</td>
+                </tr>
+                <tr>
+                    <td>screenprofile</td>
+                    <td>-</td>
+                    <td>屏幕共享视频配置</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>candidateip</td>
+                    <td>c</td>
+                    <td>指定候选地址IP</td>
+                    <td>用于专网NAT转发</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>candidateport</td>
+                    <td>cp</td>
+                    <td>指定候选地址端口号</td>
+                    <td>用于专网NAT转发</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>mediaserverip</td>
+                    <td>mi</td>
+                    <td>指定媒体服务器IP</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>mediaserverdn</td>
+                    <td>mn</td>
+                    <td>指定媒体服务器DNS</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>no_showspinner</td>
+                    <td>-</td>
+                    <td>不显示视频加载进度</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>bitrate</td>
+                    <td>b</td>
+                    <td>设置视频码率</td>
+                    <td></td>
+                    <td>b=300</td>
+                </tr>
+                <tr>
+                    <td>audiobitrate</td>
+                    <td>-</td>
+                    <td>设置音频码率</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>textroom</td>
+                    <td>-</td>
+                    <td>文本聊天模式</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>no_mirrorlocalvideo</td>
+                    <td>-</td>
+                    <td>不镜像本地视频</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>reportmonitordata</td>
+                    <td>-</td>
+                    <td>上报监控数据</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>dynamicvideoview</td>
+                    <td>-</td>
+                    <td>动态创建videoview</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>autorelogin</td>
+                    <td>ar</td>
+                    <td>网络断开时自动重连</td>
+                    <td></td>
+                    <td>ar=1</td>
+                </tr>
+                <tr>
+                    <td>autoplaymuted</td>
+                    <td>-</td>
+                    <td>静音播放视频</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>log</td>
+                    <td>-</td>
+                    <td>打开log</td>
+                    <td></td>
+                    <td>log=1</td>
+                </tr>
+                <tr>
+                    <td>test</td>
+                    <td>-</td>
+                    <td>打开测试开关, 会加载vConsole, 用于手机调试等环境</td>
+                    <td></td>
+                    <td>test=1</td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="height: 29px"></p>
+        <div id="bottom_layer" class="s-bottom-layer" style="visibility: visible; width: 80%; left: 10%">
+            <div class="s-bottom-layer-content">
+                <p class="lh">
+                    <a class="text-color" href="https://brtc.cdn.bcebos.com/brtc.html?a=appjfkryqbzyns5&amp;r=8888#wiki"
+                        >Wiki</a
+                    >
+                    &nbsp;&nbsp;&nbsp;&nbsp;<a
+                        class="text-color"
+                        href="https://brtc.cdn.bcebos.com/brtc.html?a=appjfkryqbzyns5&amp;r=8888#"
+                        onclick="OnGotoMeetingDemo()"
+                        target="_blank"
+                        >视频会议</a
+                    >
+                    &nbsp;&nbsp;&nbsp;&nbsp;<a
+                        class="text-color"
+                        href="https://cloud.baidu.com/product/rtc.html"
+                        target="_blank"
+                        >BRTC</a
+                    >
+                </p>
+            </div>
+        </div>
+    </body>
+</html>
