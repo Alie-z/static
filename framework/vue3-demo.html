@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Vue3 性能测试</title>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                padding: 20px;
+                background: #f5f5f5;
+            }
+            .header {
+                background: #42b883;
+                color: white;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+            }
+            .header h1 {
+                font-size: 24px;
+                margin-bottom: 10px;
+            }
+            .metrics {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            .metric {
+                background: white;
+                padding: 15px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .metric-label {
+                font-size: 12px;
+                color: #666;
+                margin-bottom: 5px;
+            }
+            .metric-value {
+                font-size: 24px;
+                font-weight: bold;
+                color: #42b883;
+            }
+            .controls {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+                margin-bottom: 20px;
+            }
+            .btn {
+                padding: 10px 20px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: all 0.2s;
+            }
+            .btn-primary {
+                background: #42b883;
+                color: white;
+            }
+            .btn-primary:hover {
+                background: #3aa876;
+            }
+            .btn-danger {
+                background: #e74c3c;
+                color: white;
+            }
+            .btn-danger:hover {
+                background: #c0392b;
+            }
+            .btn-warning {
+                background: #f39c12;
+                color: white;
+            }
+            .btn-warning:hover {
+                background: #d68910;
+            }
+            .list-container {
+                background: white;
+                border-radius: 8px;
+                max-height: 400px;
+                overflow-y: auto;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .list-item {
+                padding: 12px 15px;
+                border-bottom: 1px solid #eee;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .list-item:hover {
+                background: #f9f9f9;
+            }
+            .list-item.highlight {
+                background: #e8f5e9;
+            }
+            .item-id {
+                font-weight: bold;
+                color: #42b883;
+            }
+            .item-label {
+                flex: 1;
+                margin-left: 15px;
+            }
+            .count-info {
+                text-align: center;
+                padding: 10px;
+                color: #666;
+                font-size: 14px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+            <div class="header">
+                <h1>🌿 Vue3 性能测试</h1>
+                <p>测试首屏加载、大量 DOM 渲染、列表更新性能</p>
+            </div>
+
+            <div class="metrics">
+                <div class="metric">
+                    <div class="metric-label">首屏加载时间</div>
+                    <div class="metric-value">{{ metrics.loadTime }} ms</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">创建 {{ rowCount }} 行耗时</div>
+                    <div class="metric-value">{{ metrics.createTime }} ms</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">追加耗时</div>
+                    <div class="metric-value">{{ metrics.appendTime }} ms</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">更新耗时</div>
+                    <div class="metric-value">{{ metrics.updateTime }} ms</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">交换行耗时</div>
+                    <div class="metric-value">{{ metrics.swapTime }} ms</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">删除行耗时</div>
+                    <div class="metric-value">{{ metrics.deleteTime }} ms</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">清空耗时</div>
+                    <div class="metric-value">{{ metrics.clearTime }} ms</div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" @click="create(1000)">创建 1,000 行</button>
+                <button class="btn btn-primary" @click="create(10000)">创建 10,000 行</button>
+                <button class="btn btn-warning" @click="append(1000)">追加 1,000 行</button>
+                <button class="btn btn-warning" @click="append(5000)">追加 5,000 行</button>
+                <button class="btn btn-warning" @click="updateEvery10th">每10行更新</button>
+                <button class="btn btn-warning" @click="swapRows">交换行</button>
+                <button class="btn btn-danger" @click="deleteRow">删除第一行</button>
+                <button class="btn btn-danger" @click="clear">清空</button>
+            </div>
+
+            <div class="count-info">当前行数: {{ rows.length }}</div>
+
+            <div class="list-container">
+                <div
+                    v-for="row in rows"
+                    :key="row.id"
+                    class="list-item"
+                    :class="{ highlight: row.id === selectedId }"
+                    @click="select(row.id)"
+                >
+                    <span class="item-id">{{ row.id }}</span>
+                    <span class="item-label">{{ row.label }}</span>
+                    <button class="btn btn-danger" @click.stop="remove(row.id)">删除</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const adjectives = [
+                'pretty',
+                'large',
+                'big',
+                'small',
+                'tall',
+                'short',
+                'long',
+                'handsome',
+                'plain',
+                'quaint',
+                'clean',
+                'elegant',
+                'easy',
+                'angry',
+                'crazy',
+                'helpful',
+                'mushy',
+                'odd',
+                'unsightly',
+                'adorable',
+                'important',
+                'inexpensive',
+                'cheap',
+                'expensive',
+                'fancy'
+            ];
+            const colours = [
+                'red',
+                'yellow',
+                'blue',
+                'green',
+                'pink',
+                'brown',
+                'purple',
+                'brown',
+                'white',
+                'black',
+                'orange'
+            ];
+            const nouns = [
+                'table',
+                'chair',
+                'house',
+                'bbq',
+                'desk',
+                'car',
+                'pony',
+                'cookie',
+                'sandwich',
+                'burger',
+                'pizza',
+                'mouse',
+                'keyboard'
+            ];
+
+            let idCounter = 1;
+
+            function buildData(count) {
+                const data = [];
+                for (let i = 0; i < count; i++) {
+                    data.push({
+                        id: idCounter++,
+                        label: `${adjectives[Math.floor(Math.random() * adjectives.length)]} ${
+                            colours[Math.floor(Math.random() * colours.length)]
+                        } ${nouns[Math.floor(Math.random() * nouns.length)]}`
+                    });
+                }
+                return data;
+            }
+
+            // 记录首屏加载时间
+            const loadStart = performance.now();
+
+            const {createApp, ref, reactive, onMounted, nextTick} = Vue;
+
+            createApp({
+                setup() {
+                    const rows = ref([]);
+                    const selectedId = ref(null);
+                    const rowCount = ref(1000);
+                    const metrics = reactive({
+                        loadTime: 0,
+                        createTime: 0,
+                        appendTime: 0,
+                        updateTime: 0,
+                        swapTime: 0,
+                        deleteTime: 0,
+                        clearTime: 0
+                    });
+
+                    onMounted(() => {
+                        metrics.loadTime = Math.round(performance.now() - loadStart);
+                    });
+
+                    const measureTime = async fn => {
+                        const start = performance.now();
+                        fn();
+                        await nextTick();
+                        return Math.round(performance.now() - start);
+                    };
+
+                    const create = async count => {
+                        rowCount.value = count;
+                        const time = await measureTime(() => {
+                            rows.value = buildData(count);
+                        });
+                        metrics.createTime = time;
+                    };
+
+                    const append = async count => {
+                        const time = await measureTime(() => {
+                            rows.value = [...rows.value, ...buildData(count)];
+                        });
+                        metrics.appendTime = time;
+                    };
+
+                    const updateEvery10th = async () => {
+                        const time = await measureTime(() => {
+                            for (let i = 0; i < rows.value.length; i += 10) {
+                                rows.value[i].label += ' !!!';
+                            }
+                        });
+                        metrics.updateTime = time;
+                    };
+
+                    const swapRows = async () => {
+                        if (rows.value.length < 999) return;
+                        const time = await measureTime(() => {
+                            const temp = rows.value[1];
+                            rows.value[1] = rows.value[998];
+                            rows.value[998] = temp;
+                        });
+                        metrics.swapTime = time;
+                    };
+
+                    const select = id => {
+                        selectedId.value = id;
+                    };
+
+                    const remove = async id => {
+                        const time = await measureTime(() => {
+                            const idx = rows.value.findIndex(row => row.id === id);
+                            if (idx > -1) rows.value.splice(idx, 1);
+                        });
+                        metrics.deleteTime = time;
+                    };
+
+                    const deleteRow = async () => {
+                        if (rows.value.length === 0) return;
+                        const time = await measureTime(() => {
+                            rows.value.shift();
+                        });
+                        metrics.deleteTime = time;
+                    };
+
+                    const clear = async () => {
+                        const time = await measureTime(() => {
+                            rows.value = [];
+                        });
+                        metrics.clearTime = time;
+                    };
+
+                    return {
+                        rows,
+                        selectedId,
+                        rowCount,
+                        metrics,
+                        create,
+                        append,
+                        updateEvery10th,
+                        swapRows,
+                        select,
+                        remove,
+                        deleteRow,
+                        clear
+                    };
+                }
+            }).mount('#app');
+        </script>
+    </body>
+</html>

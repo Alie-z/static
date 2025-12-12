@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>San.js 性能测试</title>
+        <script src="https://unpkg.com/san@3/dist/san.min.js"></script>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                padding: 20px;
+                background: #f5f5f5;
+            }
+            .header {
+                background: #2d8cf0;
+                color: white;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+            }
+            .header h1 {
+                font-size: 24px;
+                margin-bottom: 10px;
+            }
+            .metrics {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            .metric {
+                background: white;
+                padding: 15px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .metric-label {
+                font-size: 12px;
+                color: #666;
+                margin-bottom: 5px;
+            }
+            .metric-value {
+                font-size: 24px;
+                font-weight: bold;
+                color: #2d8cf0;
+            }
+            .controls {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+                margin-bottom: 20px;
+            }
+            .btn {
+                padding: 10px 20px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: all 0.2s;
+            }
+            .btn-primary {
+                background: #2d8cf0;
+                color: white;
+            }
+            .btn-primary:hover {
+                background: #2579d8;
+            }
+            .btn-danger {
+                background: #e74c3c;
+                color: white;
+            }
+            .btn-danger:hover {
+                background: #c0392b;
+            }
+            .btn-warning {
+                background: #f39c12;
+                color: white;
+            }
+            .btn-warning:hover {
+                background: #d68910;
+            }
+            .list-container {
+                background: white;
+                border-radius: 8px;
+                max-height: 400px;
+                overflow-y: auto;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .list-item {
+                padding: 12px 15px;
+                border-bottom: 1px solid #eee;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .list-item:hover {
+                background: #f9f9f9;
+            }
+            .list-item.highlight {
+                background: #e6f7ff;
+            }
+            .item-id {
+                font-weight: bold;
+                color: #2d8cf0;
+            }
+            .item-label {
+                flex: 1;
+                margin-left: 15px;
+            }
+            .count-info {
+                text-align: center;
+                padding: 10px;
+                color: #666;
+                font-size: 14px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app"></div>
+
+        <script>
+            var adjectives = [
+                'pretty',
+                'large',
+                'big',
+                'small',
+                'tall',
+                'short',
+                'long',
+                'handsome',
+                'plain',
+                'quaint',
+                'clean',
+                'elegant',
+                'easy',
+                'angry',
+                'crazy',
+                'helpful',
+                'mushy',
+                'odd',
+                'unsightly',
+                'adorable',
+                'important',
+                'inexpensive',
+                'cheap',
+                'expensive',
+                'fancy'
+            ];
+            var colours = [
+                'red',
+                'yellow',
+                'blue',
+                'green',
+                'pink',
+                'brown',
+                'purple',
+                'brown',
+                'white',
+                'black',
+                'orange'
+            ];
+            var nouns = [
+                'table',
+                'chair',
+                'house',
+                'bbq',
+                'desk',
+                'car',
+                'pony',
+                'cookie',
+                'sandwich',
+                'burger',
+                'pizza',
+                'mouse',
+                'keyboard'
+            ];
+
+            var idCounter = 1;
+
+            function buildData(count) {
+                var data = [];
+                for (var i = 0; i < count; i++) {
+                    data.push({
+                        id: idCounter++,
+                        label:
+                            adjectives[Math.floor(Math.random() * adjectives.length)] +
+                            ' ' +
+                            colours[Math.floor(Math.random() * colours.length)] +
+                            ' ' +
+                            nouns[Math.floor(Math.random() * nouns.length)]
+                    });
+                }
+                return data;
+            }
+
+            // 记录首屏加载时间
+            var loadStart = performance.now();
+
+            var App = san.defineComponent({
+                template: `
+        <div>
+          <div class="header">
+            <h1>🏖️ San.js 性能测试</h1>
+            <p>测试首屏加载、大量 DOM 渲染、列表更新性能</p>
+          </div>
+
+          <div class="metrics">
+            <div class="metric">
+              <div class="metric-label">首屏加载时间</div>
+              <div class="metric-value">{{loadTime}} ms</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">创建 {{rowCount}} 行耗时</div>
+              <div class="metric-value">{{createTime}} ms</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">追加耗时</div>
+              <div class="metric-value">{{appendTime}} ms</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">更新耗时</div>
+              <div class="metric-value">{{updateTime}} ms</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">交换行耗时</div>
+              <div class="metric-value">{{swapTime}} ms</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">删除行耗时</div>
+              <div class="metric-value">{{deleteTime}} ms</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">清空耗时</div>
+              <div class="metric-value">{{clearTime}} ms</div>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button class="btn btn-primary" on-click="create(1000)">创建 1,000 行</button>
+            <button class="btn btn-primary" on-click="create(10000)">创建 10,000 行</button>
+            <button class="btn btn-warning" on-click="append(1000)">追加 1,000 行</button>
+            <button class="btn btn-warning" on-click="append(5000)">追加 5,000 行</button>
+            <button class="btn btn-warning" on-click="updateEvery10th">每10行更新</button>
+            <button class="btn btn-warning" on-click="swapRows">交换行</button>
+            <button class="btn btn-danger" on-click="deleteRow">删除第一行</button>
+            <button class="btn btn-danger" on-click="clear">清空</button>
+          </div>
+
+          <div class="count-info">当前行数: {{rows.length}}</div>
+
+          <div class="list-container">
+            <div
+              s-for="row in rows"
+              class="list-item {{row.id === selectedId ? 'highlight' : ''}}"
+              on-click="select(row.id)"
+            >
+              <span class="item-id">{{row.id}}</span>
+              <span class="item-label">{{row.label}}</span>
+              <button class="btn btn-danger" on-click="remove(row.id, $event)">删除</button>
+            </div>
+          </div>
+        </div>
+      `,
+
+                initData: function () {
+                    return {
+                        rows: [],
+                        selectedId: null,
+                        rowCount: 1000,
+                        loadTime: 0,
+                        createTime: 0,
+                        appendTime: 0,
+                        updateTime: 0,
+                        swapTime: 0,
+                        deleteTime: 0,
+                        clearTime: 0
+                    };
+                },
+
+                attached: function () {
+                    this.data.set('loadTime', Math.round(performance.now() - loadStart));
+                },
+
+                measureTime(fn, callback) {
+                    const start = performance.now();
+                    fn();
+                    // San 使用 nextTick
+                    san.nextTick(() => {
+                        const time = Math.round(performance.now() - start);
+                        callback(time);
+                    });
+                },
+
+                create(count) {
+                    this.data.set('rowCount', count);
+                    this.measureTime(
+                        () => {
+                            this.data.set('rows', buildData(count));
+                        },
+                        time => {
+                            this.data.set('createTime', time);
+                        }
+                    );
+                },
+
+                append(count) {
+                    this.measureTime(
+                        () => {
+                            const rows = this.data.get('rows');
+                            this.data.set('rows', rows.concat(buildData(count)));
+                        },
+                        time => {
+                            this.data.set('appendTime', time);
+                        }
+                    );
+                },
+
+                updateEvery10th() {
+                    this.measureTime(
+                        () => {
+                            const rows = this.data.get('rows');
+                            for (let i = 0; i < rows.length; i += 10) {
+                                this.data.set('rows[' + i + '].label', rows[i].label + ' !!!');
+                            }
+                        },
+                        time => {
+                            this.data.set('updateTime', time);
+                        }
+                    );
+                },
+
+                swapRows() {
+                    const rows = this.data.get('rows');
+                    if (rows.length < 999) return;
+
+                    this.measureTime(
+                        () => {
+                            const temp = rows[1];
+                            this.data.set('rows[1]', rows[998]);
+                            this.data.set('rows[998]', temp);
+                        },
+                        time => {
+                            this.data.set('swapTime', time);
+                        }
+                    );
+                },
+
+                select(id) {
+                    this.data.set('selectedId', id);
+                },
+
+                remove(id, event) {
+                    event.stopPropagation();
+                    this.measureTime(
+                        () => {
+                            const rows = this.data.get('rows');
+                            const idx = rows.findIndex(row => row.id === id);
+                            if (idx > -1) {
+                                this.data.splice('rows', [idx, 1]);
+                            }
+                        },
+                        time => {
+                            this.data.set('deleteTime', time);
+                        }
+                    );
+                },
+
+                deleteRow() {
+                    const rows = this.data.get('rows');
+                    if (rows.length === 0) return;
+
+                    this.measureTime(
+                        () => {
+                            this.data.splice('rows', [0, 1]);
+                        },
+                        time => {
+                            this.data.set('deleteTime', time);
+                        }
+                    );
+                },
+
+                clear() {
+                    this.measureTime(
+                        () => {
+                            this.data.set('rows', []);
+                        },
+                        time => {
+                            this.data.set('clearTime', time);
+                        }
+                    );
+                }
+            });
+
+            var app = new App();
+            app.attach(document.getElementById('app'));
+        </script>
+    </body>
+</html>
